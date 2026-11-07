@@ -5,9 +5,9 @@ Marca con [x] solo cuando la tarea pase tests, lint y build. Una tarea cada vez,
 ## Fase 0 — Preparación del proyecto
 - [x] 0.1 Crear proyecto con Vite (plantilla vanilla)
 - [x] 0.2 Instalar Phaser, Dexie, EasyStar, Vitest, ESLint y Prettier con su configuración y scripts
-- [ ] 0.3 Limpiar la plantilla y mostrar una escena de prueba de Phaser a 320×180 con pixelArt
-- [ ] 0.4 Crear la estructura de carpetas (scenes, objects, ui, logic, systems, save, tests, public/assets)
-- [ ] 0.5 Configurar `base` de Vite y GitHub Action para publicar en GitHub Pages
+- [x] 0.3 Limpiar la plantilla y mostrar una escena de prueba de Phaser a 320×180 con pixelArt
+- [x] 0.4 Crear la estructura de carpetas (scenes, objects, ui, logic, systems, save, tests, public/assets)
+- [x] 0.5 Configurar `base` de Vite y GitHub Action para publicar en GitHub Pages
 **Hecho cuando:** `npm run dev` muestra el lienzo y está publicado en GitHub Pages.
 
 ## Fase 1 — Base del juego
@@ -92,3 +92,5 @@ Marca con [x] solo cuando la tarea pase tests, lint y build. Una tarea cada vez,
 
 ## Registro
 <!-- Una línea por tarea terminada: fecha · ID · resumen -->
+- 2026-11-07 · 0.4 · Carpetas src/{scenes,objects,ui,logic,systems,save} y public/assets con .gitkeep; borrados restos de la plantilla de Vite
+- 2026-11-07 · 0.5 · vite.config.js con base /mibar/ y workflow .github/workflows/deploy.yml para GitHub Pages (pendiente de verificar en Pages)
