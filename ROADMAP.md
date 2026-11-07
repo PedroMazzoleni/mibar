@@ -17,7 +17,7 @@ Marca con [x] solo cuando la tarea pase tests, lint y build. Una tarea cada vez,
 - [x] 1.2 Escenas Boot y Preload con barra de carga
 - [x] 1.3 Rejilla 16×16 y resaltado de la casilla bajo el ratón
 - [x] 1.4 Conversión clic → mundo → casilla
-- [ ] 1.5 Cámara con arrastre y límites
+- [x] 1.5 Cámara con arrastre y límites
 - [ ] 1.6 Panel de depuración (FPS y casilla) que se oculta con una tecla
       **Hecho cuando:** la rejilla se ve nítida y al hacer clic se muestra la casilla.
 
@@ -109,3 +109,4 @@ Marca con [x] solo cuando la tarea pase tests, lint y build. Una tarea cada vez,
 - 2026-11-07 · 1.1 · src/logic/zoom.js (calcularZoomEntero) + main.js en Scale.NONE con zoom entero recalculado al redimensionar, roundPixels y CSS pixelated a pantalla completa
 - 2026-11-07 · 1.2 · BootScene, PreloadScene (barra de carga con Graphics) y TestScene en src/scenes; main.js con las tres escenas; eslint con globals de Node para tools/**
 - 2026-11-07 · 1.3+1.4 · src/logic/grid.js (worldToTile, tileToWorld, tileCenter, isInsideGrid) con tests; TestScene con rejilla 16×16 y resaltado de la casilla bajo el ratón vía pointer.worldX/worldY
+- 2026-11-08 · 1.5 · src/logic/camera.js (clampScroll, dragScroll, screenToWorld) con tests; TestScene con mundo de prueba 40×24 arrastrable, umbral de 3 px y resaltado sin desfase

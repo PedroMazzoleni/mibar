@@ -1,37 +1,46 @@
 ---
 name: orden
-description: Ejecuta la siguiente tarea pendiente del ROADMAP.md con el equipo de agentes, una sola cada vez.
+description: Ejecuta la siguiente tarea del ROADMAP con el equipo de agentes (planificar, implementar, probar, revisar y hacer commit local).
 disable-model-invocation: true
+argument-hint: "[ID de tarea opcional, ej. 1.3]"
 ---
 
-Ejecuta UNA tarea del roadmap con este flujo (planificación → ejecución → verificación). No hagas nada fuera de él.
+# /siguiente
 
-Los agentes se comunican a través de `.claude/tarea-actual.md`: el arquitecto define la tarea y cada agente lee ese archivo y añade su parte en la sección `## Bitácora`. Tú (la conversación principal) coordinas el orden y pasas solo mensajes cortos.
+Llevas una tarea del roadmap de principio a fin con el equipo de agentes.
+Solo paras para pedir permiso en un punto: la aprobación de la especificación.
 
-1. **Elegir.** Lee `ROADMAP.md`. Si el usuario indicó un ID (por ejemplo `/siguiente 1.3`), usa esa tarea; si no, la primera `- [ ]` en orden.
-2. **Especificar.** Delega en `arquitecto-juego` con el ID y el texto de la tarea.
-3. **Aprobar.** Muestra la especificación al usuario y espera su confirmación. Si pide cambios, ajústala tú sin volver a llamar al arquitecto. Si dice que no, para.
-4. **Publicar.** Sobrescribe `.claude/tarea-actual.md` con la plantilla de abajo y la especificación aprobada.
-5. **Implementar.** Delega en `desarrollador-phaser`: "Implementa `.claude/tarea-actual.md`".
-6. **Verificar.** Delega en `test-automator`: "Verifica `.claude/tarea-actual.md`".
-7. **Arreglar (solo si falla).** Delega en `debugger`: "Resuelve el último fallo de la bitácora de `.claude/tarea-actual.md`" y vuelve al paso 6. Máximo 2 vueltas; si sigue fallando, para y explica el problema al usuario.
-8. **Revisar.** Delega en `code-reviewer`: "Revisa la tarea de `.claude/tarea-actual.md`". Si hay problemas, un único paso por `debugger` y vuelve al paso 6.
-9. **Consultar al arquitecto (solo si hace falta).** Si algún agente anota en la bitácora una `DUDA:` de diseño, delega en `arquitecto-juego`: "Responde la duda de `.claude/tarea-actual.md`", añade su respuesta a la bitácora y repite el paso del agente que preguntó.
-10. **Cerrar.** Marca la tarea como `[x]` en `ROADMAP.md` y añade en `## Registro` una línea: fecha · ID · resumen.
-11. **Commit.** Delega en `.claude/git-publicador.md` si hay un conflicto PARA y explica al usuario que esta pasando
-12. **Parar.** Resume en 2 líneas lo hecho y di cuál es la siguiente tarea. NO la empieces. Recuerda que puede usar `/clear` antes de la siguiente.
-13. **Discutir** Una vez resumido espera a que el usuario te haga alguna correción si la tiene delega al primer paso otra vez con las instucciones que se te han dado
+## Flujo
+1. **Elegir tarea**: si hay argumento (`$ARGUMENTS`), esa tarea; si no, la primera `[ ]` de `ROADMAP.md`.
+2. **Especificar**: llama a @arquitecto-juego. Enseña la especificación al usuario y ESPERA su aprobación.
+   Si pide cambios, vuelve al arquitecto con ellos.
+3. **Publicar la pizarra** `.claude/tarea-actual.md` (sobrescribe la anterior):
+   ```
+   # Tarea <ID>
+   ## Especificación (aprobada)
+   <especificación>
+   ## Bitácora
+   ```
+4. **Implementar**: @desarrollador-phaser.
+   Si deja una `DUDA:`, la responde @arquitecto-juego. Si la respuesta cambia el alcance, pregunta al usuario.
+   Después, el desarrollador continúa.
+5. **Probar**: @test-automator.
+   Si da `FALLO`: @debugger y otra vez @test-automator, como máximo 2 veces.
+   Si sigue fallando, PARA y cuéntale al usuario qué falla.
+6. **Revisar**: @code-reviewer.
+   Si da `PROBLEMAS`: un único arreglo con @desarrollador-phaser, luego @test-automator y @code-reviewer otra vez.
+   Si sigue con problemas, PARA y cuéntaselos al usuario.
+7. **Cerrar la tarea**: marca `[x]` en `ROADMAP.md` y añade en `## Registro` una línea `- <fecha> <ID> <resumen corto>`.
+8. **Commit local**: llama a @git-publicador en modo commit con el mensaje `feat(fase-N): <resumen>`
+   (o `fix`/`docs`/`chore` si encaja mejor). Hazlo sin preguntar al usuario. No hagas push.
+9. **Resumen y PARAR**: en pocas líneas, di al usuario:
+   - qué tarea se ha hecho y qué puede comprobar (la línea de Aceptación),
+   - los sprites nuevos, si hay (se ven en `http://localhost:5173/sprites.html`),
+   - el hash del commit,
+   - que puede decir "sube" para hacer push a GitHub, y que conviene hacer `/clear` antes de la siguiente tarea.
+   No empieces otra tarea.
 
-## Plantilla de `.claude/tarea-actual.md`
-
-```markdown
-# Tarea <ID> — <título>
-
-## Especificación (aprobada por el usuario)
-
-<especificación del arquitecto>
-
-## Bitácora
-
-<!-- Cada agente añade UNA entrada corta al final: [agente] resultado. Usa DUDA: para preguntas de diseño. -->
-```
+## Reglas
+- Cada agente contesta con una palabra de estado y una línea; el detalle va en la bitácora.
+- No ejecutes `/init` (sobrescribiría `CLAUDE.md`).
+- Si el usuario dice "sube" después de una tarea, llama a @git-publicador en modo push.
