@@ -1,7 +1,10 @@
 // Vista previa del taller de sprites (solo en desarrollo, no entra en el build).
 import paletaJson from './paleta.json';
 
-const paleta = paletaJson.colores;
+// La paleta es una lista [{ char, hex, nombre }]; se indexa por carácter
+const paleta = Object.fromEntries(
+  paletaJson.map(({ char, hex, nombre }) => [char, { hex, nombre }]),
+);
 const sprites = Object.values(
   import.meta.glob('./sprites/*.json', { eager: true, import: 'default' }),
 );
@@ -106,15 +109,23 @@ function pintar() {
     tarjeta.className = 'sprite';
     const estado =
       sprite.estado === 'aprobado' ? '<span class="aprobado">aprobado</span>' : 'borrador';
-    tarjeta.innerHTML = `<h2>${sprite.nombre}</h2><small>${sprite.ancho}×${sprite.alto}, ${estado}<br>${sprite.notas ?? ''}</small>`;
+    tarjeta.innerHTML = `<h2>${sprite.titulo ?? sprite.nombre}</h2><small>${sprite.ancho}×${sprite.alto}, ${estado}<br>${sprite.notas ?? ''}</small>`;
     const lienzos = document.createElement('div');
     lienzos.className = 'lienzos';
     try {
-      for (const frame of sprite.frames) {
-        lienzos.append(dibujar(sprite, frame, Number(zoom.value), rejilla.checked));
-      }
-      // Tamaño aproximado al que se verá en el juego (zoom ×4 sobre 320×180)
-      lienzos.append(dibujar(sprite, sprite.frames[0], 4, false));
+      sprite.frames.forEach((frame, f) => {
+        const lienzo = dibujar(sprite, frame, Number(zoom.value), rejilla.checked);
+        // Con etiquetas (p. ej. un tileset), cada frame lleva su nombre en español debajo
+        const etiqueta = sprite.etiquetas?.[f];
+        if (!etiqueta) return lienzos.append(lienzo);
+        const figura = document.createElement('figure');
+        const pie = document.createElement('figcaption');
+        pie.textContent = etiqueta;
+        figura.append(lienzo, pie);
+        lienzos.append(figura);
+      });
+      // Tamaño aproximado al que se verá en el juego (zoom ×3 sobre 640×360)
+      lienzos.append(dibujar(sprite, sprite.frames[0], 3, false));
     } catch (e) {
       lienzos.innerHTML = `<span class="error">${e.message}</span>`;
     }

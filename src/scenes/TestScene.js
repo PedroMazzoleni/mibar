@@ -14,7 +14,7 @@ const TEST_ROWS = 24;
 // Píxeles mínimos de movimiento para considerar que es un arrastre y no un clic
 const DRAG_THRESHOLD = 3;
 
-// Escena de pruebas: rejilla 16x16 y resaltado de la casilla bajo el ratón
+// Escena de pruebas: rejilla de casillas (TILE_SIZE) y resaltado de la casilla bajo el ratón
 export default class TestScene extends Phaser.Scene {
   constructor() {
     super('Test');

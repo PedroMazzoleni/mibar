@@ -1,8 +1,8 @@
 import Phaser from 'phaser';
 import { BASE_WIDTH, BASE_HEIGHT } from '../logic/zoom.js';
 
-const BAR_WIDTH = 160;
-const BAR_HEIGHT = 12;
+const BAR_WIDTH = 320;
+const BAR_HEIGHT = 24;
 const MIN_DELAY_MS = 300;
 
 // Escena de precarga: dibuja la barra de carga solo con Graphics
@@ -16,13 +16,13 @@ export default class PreloadScene extends Phaser.Scene {
     const y = Math.round((BASE_HEIGHT - BAR_HEIGHT) / 2);
 
     this.add
-      .text(BASE_WIDTH / 2, y - 12, 'Cargando...', { fontSize: '10px', color: '#f2e8cf' })
+      .text(BASE_WIDTH / 2, y - 24, 'Cargando...', { fontSize: '20px', color: '#f2e8cf' })
       .setOrigin(0.5);
 
     // Marco
     const frame = this.add.graphics();
-    frame.lineStyle(1, 0xf2e8cf, 1);
-    frame.strokeRect(x - 2, y - 2, BAR_WIDTH + 4, BAR_HEIGHT + 4);
+    frame.lineStyle(2, 0xf2e8cf, 1);
+    frame.strokeRect(x - 4, y - 4, BAR_WIDTH + 8, BAR_HEIGHT + 8);
 
     // Relleno que crece con el progreso
     const bar = this.add.graphics();

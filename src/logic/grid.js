@@ -1,6 +1,6 @@
 import { BASE_WIDTH, BASE_HEIGHT } from './zoom.js';
 
-export const TILE_SIZE = 16;
+export const TILE_SIZE = 32;
 export const GRID_COLS = Math.floor(BASE_WIDTH / TILE_SIZE);
 export const GRID_ROWS = Math.floor(BASE_HEIGHT / TILE_SIZE);
 

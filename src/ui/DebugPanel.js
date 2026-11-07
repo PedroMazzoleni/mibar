@@ -2,7 +2,7 @@ import { formatDebugText } from '../logic/debugInfo.js';
 
 // Tecla que muestra/oculta el panel
 const TOGGLE_KEY = 'F3';
-const PADDING = 3;
+const PADDING = 6;
 
 // Panel de depuración fijo en pantalla: FPS, casilla bajo el ratón y último clic
 export default class DebugPanel {
@@ -13,12 +13,12 @@ export default class DebugPanel {
 
     this.bg = scene.add.rectangle(0, 0, 1, 1, 0x1e1a1d, 0.7).setOrigin(0, 0);
     this.text = scene.add.text(PADDING, PADDING, '', {
-      fontSize: '8px',
+      fontSize: '16px',
       color: '#f4ead2',
-      lineSpacing: 1,
+      lineSpacing: 2,
     });
     this.container = scene.add
-      .container(2, 2, [this.bg, this.text])
+      .container(4, 4, [this.bg, this.text])
       .setScrollFactor(0)
       .setDepth(1000)
       .setVisible(visible);

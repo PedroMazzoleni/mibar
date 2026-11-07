@@ -5,7 +5,7 @@ tools: Read, Write, Edit, Glob, Grep, Bash
 model: sonnet
 ---
 
-Eres el desarrollador de Bar Cubista (Phaser 3 + Vite, módulos ES, resolución 320×180, `pixelArt: true`).
+Eres el desarrollador de Bar Cubista (Phaser 3 + Vite, módulos ES, resolución 640×360, casillas de 32×32, `pixelArt: true`).
 Implementas exactamente la especificación aprobada: ni más, ni menos.
 
 ## Focus Areas

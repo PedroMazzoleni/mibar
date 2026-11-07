@@ -9,7 +9,13 @@ import process from 'node:process';
 
 const ORIGEN = 'arte/sprites';
 const DESTINO = 'public/assets/sprites';
-const paleta = JSON.parse(readFileSync('arte/paleta.json', 'utf8')).colores;
+// La paleta es una lista [{ char, hex, nombre }]; se indexa por carácter
+const paleta = Object.fromEntries(
+  JSON.parse(readFileSync('arte/paleta.json', 'utf8')).map(({ char, hex, nombre }) => [
+    char,
+    { hex, nombre },
+  ]),
+);
 
 // Tabla para el CRC32 que exige cada bloque del PNG
 const tablaCrc = new Uint32Array(256);

@@ -87,9 +87,18 @@
       }
       .lienzos {
         display: flex;
+        flex-wrap: wrap;
         gap: 12px;
         align-items: flex-end;
-        overflow-x: auto;
+      }
+      figure {
+        margin: 0;
+      }
+      figcaption {
+        color: var(--suave);
+        font-size: 13px;
+        text-align: center;
+        margin-top: 4px;
       }
       canvas {
         image-rendering: pixelated;

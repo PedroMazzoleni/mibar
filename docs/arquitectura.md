@@ -5,7 +5,7 @@ public/assets/
 ├── sprites/ maps/ sounds/ fonts/
 └── data/            → products.json, recipes.json, customers.json
 src/
-├── main.js          → configuración de Phaser (320×180, pixelArt, escalado FIT)
+├── main.js          → configuración de Phaser (640×360, pixelArt, zoom entero)
 ├── scenes/          → Boot, Preload, MainMenu, Bar, Market, DaySummary, Hud
 ├── objects/         → CustomerSprite, FurnitureSprite, PlayerSprite
 ├── ui/              → Button, Panel, Tooltip, OrderTicket
@@ -27,4 +27,4 @@ tests/               → Vitest sobre src/logic
 - Clases de escena en PascalCase (`BarScene.js`); módulos de lógica en camelCase (`cashRegister.js`).
 - Contenido del juego (precios, recetas, tipos de cliente) en JSON, nunca escrito en el código.
 - Interfaz dibujada en Phaser (`HudScene`), no con HTML.
-- Casillas de 16×16; coordenadas de dibujo redondeadas a enteros.
+- Casillas de 32×32 (`TILE_SIZE` en `src/logic/grid.js`); coordenadas de dibujo redondeadas a enteros.
