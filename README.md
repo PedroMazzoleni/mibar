@@ -1,4 +1,4 @@
-# mibar 
+# mibar
 
 > Nombre provisional.
 
@@ -7,7 +7,6 @@ Simulador 2D de vista cenital en el que acabas de abrir un **bar clásico españ
 La estética mezcla **cubismo y pixel art**, inspirada en los bodegones de Picasso y Juan Gris: el espacio se ve desde arriba, pero botellas, vasos y personas aparecen fragmentados y desde varios puntos de vista a la vez.
 
 **Estado:** en desarrollo, Fase 0 (preparación del proyecto).
-
 
 ---
 
@@ -21,17 +20,17 @@ Cada día de juego sigue el mismo ciclo:
 
 ## Tecnologías
 
-| Pieza | Tecnología |
-| --- | --- |
-| Lenguaje | JavaScript (módulos ES) |
-| Motor 2D | [Phaser](https://phaser.io/) |
-| Entorno y build | [Vite](https://vitejs.dev/) |
-| Guardado de partidas | IndexedDB con [Dexie.js](https://dexie.org/) |
-| Pathfinding | [EasyStar.js](https://github.com/prettymuchbryce/easystarjs) |
-| Mapas | [Tiled](https://www.mapeditor.org/) |
-| Pixel art | [Aseprite](https://www.aseprite.org/) |
-| Tests | [Vitest](https://vitest.dev/) |
-| Calidad de código | ESLint + Prettier |
+| Pieza                | Tecnología                                                   |
+| -------------------- | ------------------------------------------------------------ |
+| Lenguaje             | JavaScript (módulos ES)                                      |
+| Motor 2D             | [Phaser](https://phaser.io/)                                 |
+| Entorno y build      | [Vite](https://vitejs.dev/)                                  |
+| Guardado de partidas | IndexedDB con [Dexie.js](https://dexie.org/)                 |
+| Pathfinding          | [EasyStar.js](https://github.com/prettymuchbryce/easystarjs) |
+| Mapas                | [Tiled](https://www.mapeditor.org/)                          |
+| Pixel art            | [Aseprite](https://www.aseprite.org/)                        |
+| Tests                | [Vitest](https://vitest.dev/)                                |
+| Calidad de código    | ESLint + Prettier                                            |
 
 ## Requisitos
 
@@ -51,14 +50,14 @@ El juego se abre en `http://localhost:5173`.
 
 ## Scripts
 
-| Comando | Qué hace |
-| --- | --- |
-| `npm run dev` | Servidor de desarrollo con recarga automática |
-| `npm run build` | Genera la versión para publicar en `dist/` |
-| `npm run preview` | Sirve localmente la versión de `dist/` |
-| `npm test` | Ejecuta los tests con Vitest |
-| `npm run lint` | Revisa el código con ESLint |
-| `npm run format` | Formatea el código con Prettier |
+| Comando           | Qué hace                                      |
+| ----------------- | --------------------------------------------- |
+| `npm run dev`     | Servidor de desarrollo con recarga automática |
+| `npm run build`   | Genera la versión para publicar en `dist/`    |
+| `npm run preview` | Sirve localmente la versión de `dist/`        |
+| `npm test`        | Ejecuta los tests con Vitest                  |
+| `npm run lint`    | Revisa el código con ESLint                   |
+| `npm run format`  | Formatea el código con Prettier               |
 
 ## Estructura del proyecto
 

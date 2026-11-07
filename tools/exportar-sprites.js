@@ -50,11 +50,15 @@ function exportar(sprite) {
   const { nombre, ancho, alto, frames } = sprite;
   frames.forEach((frame, f) => {
     if (frame.length !== alto) {
-      throw new Error(`${nombre}: el frame ${f} tiene ${frame.length} filas y deberían ser ${alto}`);
+      throw new Error(
+        `${nombre}: el frame ${f} tiene ${frame.length} filas y deberían ser ${alto}`,
+      );
     }
     frame.forEach((fila, y) => {
       if (fila.length !== ancho) {
-        throw new Error(`${nombre}: frame ${f}, fila ${y} mide ${fila.length} y debería medir ${ancho}`);
+        throw new Error(
+          `${nombre}: frame ${f}, fila ${y} mide ${fila.length} y debería medir ${ancho}`,
+        );
       }
     });
   });

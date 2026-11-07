@@ -28,8 +28,10 @@ Los agentes se comunican a través de `.claude/tarea-actual.md`: el arquitecto d
 # Tarea <ID> — <título>
 
 ## Especificación (aprobada por el usuario)
+
 <especificación del arquitecto>
 
 ## Bitácora
+
 <!-- Cada agente añade UNA entrada corta al final: [agente] resultado. Usa DUDA: para preguntas de diseño. -->
 ```

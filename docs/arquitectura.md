@@ -16,11 +16,13 @@ tests/               → Vitest sobre src/logic
 ```
 
 ## Capas
+
 - **logic**: recibe datos y devuelve datos. Sin Phaser, sin DOM. Todo se prueba con Vitest.
 - **scenes / objects / ui**: leen `gameState` y lo dibujan. Los clics generan acciones (`takeOrder`, `serveOrder`), no modifican el estado directamente.
 - **save**: único sitio que toca IndexedDB.
 
 ## Convenciones
+
 - Nombres de archivos, funciones y variables en inglés; comentarios en español.
 - Clases de escena en PascalCase (`BarScene.js`); módulos de lógica en camelCase (`cashRegister.js`).
 - Contenido del juego (precios, recetas, tipos de cliente) en JSON, nunca escrito en el código.
