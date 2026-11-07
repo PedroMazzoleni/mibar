@@ -18,12 +18,12 @@ Marca con [x] solo cuando la tarea pase tests, lint y build. Una tarea cada vez,
 - [x] 1.3 Rejilla 16×16 y resaltado de la casilla bajo el ratón
 - [x] 1.4 Conversión clic → mundo → casilla
 - [x] 1.5 Cámara con arrastre y límites
-- [ ] 1.6 Panel de depuración (FPS y casilla) que se oculta con una tecla
+- [x] 1.6 Panel de depuración (FPS y casilla) que se oculta con una tecla
       **Hecho cuando:** la rejilla se ve nítida y al hacer clic se muestra la casilla.
 
 ## Fase 2 — El local
 
-- [ ] 2.1 Primer plano del bar en Tiled (suelo, paredes, barra, mesas, cocina, puerta, baño)
+- [x] 2.1 Primer plano del bar en Tiled (suelo, paredes, barra, mesas, cocina, puerta, baño)
 - [ ] 2.2 Cargar el mapa con capas de casillas y de objetos
 - [ ] 2.3 Casillas transitables / no transitables
 - [ ] 2.4 FurnitureSprite interactivo (barra, mesa, silla, grifo, cafetera, plancha, caja)
@@ -110,3 +110,5 @@ Marca con [x] solo cuando la tarea pase tests, lint y build. Una tarea cada vez,
 - 2026-11-07 · 1.2 · BootScene, PreloadScene (barra de carga con Graphics) y TestScene en src/scenes; main.js con las tres escenas; eslint con globals de Node para tools/**
 - 2026-11-07 · 1.3+1.4 · src/logic/grid.js (worldToTile, tileToWorld, tileCenter, isInsideGrid) con tests; TestScene con rejilla 16×16 y resaltado de la casilla bajo el ratón vía pointer.worldX/worldY
 - 2026-11-08 · 1.5 · src/logic/camera.js (clampScroll, dragScroll, screenToWorld) con tests; TestScene con mundo de prueba 40×24 arrastrable, umbral de 3 px y resaltado sin desfase
+- 2026-11-08 · 1.6 · src/logic/debugInfo.js (formatDebugText) con tests y src/ui/DebugPanel.js: FPS, casilla bajo el ratón y último clic; F3 lo oculta (visible al arrancar solo en dev)
+- 2026-11-08 · 2.1 · public/assets/maps/bar.tmj (30×18, capas suelo, paredes, muebles y zonas) y tileset borrador arte/sprites/bar-tiles.json → public/assets/sprites/bar-tiles.png

@@ -6,6 +6,7 @@ import {
   tileToWorld,
   isInsideGrid,
 } from '../logic/grid.js';
+import DebugPanel from '../ui/DebugPanel.js';
 
 // Mundo de prueba provisional (hasta el mapa Tiled de la Fase 2)
 const TEST_COLS = 40;
@@ -40,8 +41,8 @@ export default class TestScene extends Phaser.Scene {
       .setDepth(1)
       .setVisible(false);
 
-    // Texto temporal col,row
-    this.label = this.add.text(4, 4, '', { fontSize: '8px', color: '#f4ead2' }).setDepth(2).setScrollFactor(0);
+    // Panel de depuración (F3): visible al arrancar solo en desarrollo
+    this.debug = new DebugPanel(this, { visible: import.meta.env.DEV });
 
     this.worldW = width;
     this.worldH = height;
@@ -80,12 +81,20 @@ export default class TestScene extends Phaser.Scene {
       }
       this.updateHighlight(pointer);
     });
-    this.input.on('pointerup', () => this.resetDrag());
+    this.input.on('pointerup', (pointer) => {
+      // Clic sin arrastre: el panel muestra la casilla pulsada
+      if (this.dragStart && !this.dragging) this.debug.setClick(this.tileAt(pointer));
+      this.resetDrag();
+    });
     this.input.on('gameout', () => {
       this.resetDrag();
       this.highlight.setVisible(false);
-      this.label.setText('');
+      this.debug.setHover(null);
     });
+  }
+
+  update() {
+    this.debug.update();
   }
 
   resetDrag() {
@@ -93,19 +102,24 @@ export default class TestScene extends Phaser.Scene {
     this.dragStart = null;
   }
 
-  updateHighlight(pointer) {
+  // Casilla bajo el puntero, o null si cae fuera del mundo
+  tileAt(pointer) {
     // Conversión a mano con el scroll ya actualizado: ni pointer.worldX/Y ni getWorldPoint
     // (matriz de la cámara, se recalcula en preRender) reflejan el scroll asignado en este frame
     const cam = this.cameras.main;
     const world = screenToWorld(cam.scrollX, cam.scrollY, pointer.x, pointer.y, cam.zoom);
     const { col, row } = worldToTile(world.x, world.y);
-    if (!isInsideGrid(col, row, TEST_COLS, TEST_ROWS)) {
+    return isInsideGrid(col, row, TEST_COLS, TEST_ROWS) ? { col, row } : null;
+  }
+
+  updateHighlight(pointer) {
+    const tile = this.tileAt(pointer);
+    this.debug.setHover(tile);
+    if (!tile) {
       this.highlight.setVisible(false);
-      this.label.setText('');
       return;
     }
-    const { x, y } = tileToWorld(col, row);
+    const { x, y } = tileToWorld(tile.col, tile.row);
     this.highlight.setPosition(x, y).setVisible(true);
-    this.label.setText(`${col},${row}`);
   }
 }
