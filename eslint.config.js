@@ -12,5 +12,11 @@ export default [
       globals: globals.browser,
     },
   },
+  {
+    files: ['tools/**'],
+    languageOptions: {
+      globals: globals.node,
+    },
+  },
   prettier,
 ];

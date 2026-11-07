@@ -11,8 +11,8 @@ Marca con [x] solo cuando la tarea pase tests, lint y build. Una tarea cada vez,
 **Hecho cuando:** `npm run dev` muestra el lienzo y está publicado en GitHub Pages.
 
 ## Fase 1 — Base del juego
-- [ ] 1.1 Configuración de Phaser: escalado FIT con zoom entero
-- [ ] 1.2 Escenas Boot y Preload con barra de carga
+- [x] 1.1 Configuración de Phaser: escalado FIT con zoom entero
+- [x] 1.2 Escenas Boot y Preload con barra de carga
 - [ ] 1.3 Rejilla 16×16 y resaltado de la casilla bajo el ratón
 - [ ] 1.4 Conversión clic → mundo → casilla
 - [ ] 1.5 Cámara con arrastre y límites
@@ -94,3 +94,5 @@ Marca con [x] solo cuando la tarea pase tests, lint y build. Una tarea cada vez,
 <!-- Una línea por tarea terminada: fecha · ID · resumen -->
 - 2026-11-07 · 0.4 · Carpetas src/{scenes,objects,ui,logic,systems,save} y public/assets con .gitkeep; borrados restos de la plantilla de Vite
 - 2026-11-07 · 0.5 · vite.config.js con base /mibar/ y workflow .github/workflows/deploy.yml para GitHub Pages (pendiente de verificar en Pages)
+- 2026-11-07 · 1.1 · src/logic/zoom.js (calcularZoomEntero) + main.js en Scale.NONE con zoom entero recalculado al redimensionar, roundPixels y CSS pixelated a pantalla completa
+- 2026-11-07 · 1.2 · BootScene, PreloadScene (barra de carga con Graphics) y TestScene en src/scenes; main.js con las tres escenas; eslint con globals de Node para tools/**

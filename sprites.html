@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Taller de sprites · Bar Cubista</title>
+    <style>
+      :root { --fondo: #3b2f2a; --panel: #5a4032; --texto: #f4ead2; --suave: #dcae6a; --tinta: #1e1a1d; }
+      * { box-sizing: border-box; }
+      body { margin: 0; padding: 24px; background: var(--fondo); color: var(--texto);
+        font: 15px/1.5 Georgia, 'Times New Roman', serif; }
+      h1 { margin: 0 0 4px; font-size: 26px; font-weight: normal; }
+      p { margin: 0 0 16px; color: var(--suave); }
+      #controles { display: flex; flex-wrap: wrap; gap: 16px; margin-bottom: 16px; }
+      label { display: flex; gap: 6px; align-items: center; }
+      select, input { font: inherit; }
+      #paleta { display: flex; flex-wrap: wrap; gap: 4px; margin-bottom: 24px; }
+      .muestra { width: 34px; height: 34px; display: grid; place-items: center; font: bold 13px monospace;
+        border: 2px solid var(--tinta); }
+      #sprites { display: flex; flex-wrap: wrap; gap: 20px; align-items: flex-start; }
+      .sprite { background: var(--panel); padding: 14px; border: 2px solid var(--tinta); max-width: 100%; }
+      .sprite h2 { margin: 0; font-size: 17px; font-weight: normal; }
+      .sprite small { color: var(--suave); display: block; margin-bottom: 10px; }
+      .lienzos { display: flex; gap: 12px; align-items: flex-end; overflow-x: auto; }
+      canvas { image-rendering: pixelated; display: block; }
+      .aprobado { color: #9aa35a; }
+      .error { color: #c8553d; white-space: pre-wrap; }
+    </style>
+  </head>
+  <body>
+    <h1>Taller de sprites</h1>
+    <p>Se actualiza solo cada vez que Claude cambia un sprite.</p>
+    <div id="controles">
+      <label>Zoom <input id="zoom" type="range" min="4" max="20" value="12" /></label>
+      <label>Fondo
+        <select id="fondo">
+          <option value="tablero">Tablero (transparencia)</option>
+          <option value="suelo">Suelo del bar</option>
+          <option value="claro">Claro</option>
+        </select>
+      </label>
+      <label><input id="rejilla" type="checkbox" checked /> Rejilla</label>
+    </div>
+    <div id="paleta"></div>
+    <main id="sprites"></main>
+    <script type="module" src="/arte/vista-previa.js"></script>
+  </body>
+</html>

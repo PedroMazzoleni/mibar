@@ -18,8 +18,9 @@ Los agentes se comunican a través de `.claude/tarea-actual.md`: el arquitecto d
 8. **Revisar.** Delega en `code-reviewer`: "Revisa la tarea de `.claude/tarea-actual.md`". Si hay problemas, un único paso por `debugger` y vuelve al paso 6.
 9. **Consultar al arquitecto (solo si hace falta).** Si algún agente anota en la bitácora una `DUDA:` de diseño, delega en `arquitecto-juego`: "Responde la duda de `.claude/tarea-actual.md`", añade su respuesta a la bitácora y repite el paso del agente que preguntó.
 10. **Cerrar.** Marca la tarea como `[x]` en `ROADMAP.md` y añade en `## Registro` una línea: fecha · ID · resumen.
-11. **Commit.** Propón un mensaje (`feat(fase-N): ...`) y pregunta si hacerlo.
-12. **Parar.** Resume en 3 líneas lo hecho y di cuál es la siguiente tarea. NO la empieces. Recuerda que puede usar `/clear` antes de la siguiente.
+11. **Commit.** Delega en `.claude/git-publicador.md` si hay un conflicto PARA y explica al usuario que esta pasando
+12. **Parar.** Resume en 2 líneas lo hecho y di cuál es la siguiente tarea. NO la empieces. Recuerda que puede usar `/clear` antes de la siguiente.
+13. **Discutir** Una vez resumido espera a que el usuario te haga alguna correción si la tiene delega al primer paso otra vez con las instucciones que se te han dado
 
 ## Plantilla de `.claude/tarea-actual.md`
 

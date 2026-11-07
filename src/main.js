@@ -1,19 +1,28 @@
 import Phaser from 'phaser';
+import BootScene from './scenes/BootScene.js';
+import PreloadScene from './scenes/PreloadScene.js';
+import TestScene from './scenes/TestScene.js';
+import { BASE_WIDTH, BASE_HEIGHT, calcularZoomEntero } from './logic/zoom.js';
 
-class TestScene extends Phaser.Scene {
-  create() {
-    this.add.rectangle(160, 90, 32, 32, 0xc8553d);
-    this.add.text(8, 8, 'Bar Cubista', { fontSize: '10px', color: '#f2e8cf' });
-  }
-}
-
-new Phaser.Game({
+const game = new Phaser.Game({
   type: Phaser.AUTO,
   parent: 'app',
-  width: 320,
-  height: 180,
+  width: BASE_WIDTH,
+  height: BASE_HEIGHT,
   pixelArt: true,
+  roundPixels: true,
   backgroundColor: '#3b2f2a',
-  scale: { mode: Phaser.Scale.FIT, autoCenter: Phaser.Scale.CENTER_BOTH },
-  scene: [TestScene],
+  scale: {
+    mode: Phaser.Scale.NONE,
+    autoCenter: Phaser.Scale.CENTER_BOTH,
+    zoom: calcularZoomEntero(window.innerWidth, window.innerHeight),
+  },
+  scene: [BootScene, PreloadScene, TestScene],
 });
+
+function ajustarZoom() {
+  game.scale.setZoom(calcularZoomEntero(window.innerWidth, window.innerHeight));
+  game.scale.refresh();
+}
+
+window.addEventListener('resize', ajustarZoom);

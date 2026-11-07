@@ -1,0 +1,24 @@
+{
+  "colores": {
+    ".": { "hex": null, "nombre": "transparente" },
+    "0": { "hex": "#1e1a1d", "nombre": "tinta" },
+    "1": { "hex": "#3b2f2a", "nombre": "marrón fondo" },
+    "2": { "hex": "#5a4032", "nombre": "marrón oscuro" },
+    "3": { "hex": "#7a5236", "nombre": "siena tostada" },
+    "4": { "hex": "#a0683f", "nombre": "siena" },
+    "5": { "hex": "#c48a4f", "nombre": "ocre oscuro" },
+    "6": { "hex": "#dcae6a", "nombre": "ocre" },
+    "7": { "hex": "#ecd29a", "nombre": "ocre claro" },
+    "8": { "hex": "#f4ead2", "nombre": "crema" },
+    "9": { "hex": "#fbf7ee", "nombre": "blanco roto" },
+    "a": { "hex": "#3e4a2e", "nombre": "oliva oscuro" },
+    "b": { "hex": "#6b7a3c", "nombre": "oliva" },
+    "c": { "hex": "#9aa35a", "nombre": "oliva claro" },
+    "d": { "hex": "#2f3a48", "nombre": "gris azulado oscuro" },
+    "e": { "hex": "#4f6070", "nombre": "gris azulado" },
+    "f": { "hex": "#7f909c", "nombre": "gris azulado medio" },
+    "g": { "hex": "#b3c0c6", "nombre": "gris azulado claro" },
+    "r": { "hex": "#c8553d", "nombre": "acento rojo" },
+    "s": { "hex": "#8e3527", "nombre": "acento rojo oscuro" }
+  }
+}

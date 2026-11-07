@@ -9,8 +9,10 @@
     "preview": "vite preview",
     "test": "vitest",
     "lint": "eslint .",
-    "format": "prettier --write ."
+    "format": "prettier --write .",
+    "sprites": "node tools/exportar-sprites.js"
   },
+  
   "devDependencies": {
     "@eslint/js": "^10.0.1",
     "eslint": "^10.14.0",
