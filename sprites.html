@@ -104,6 +104,11 @@
         image-rendering: pixelated;
         display: block;
       }
+      #mapas canvas {
+        max-width: 100%;
+        height: auto;
+        margin-bottom: 16px;
+      }
       .aprobado {
         color: #9aa35a;
       }
@@ -130,6 +135,12 @@
     </div>
     <div id="paleta"></div>
     <main id="sprites"></main>
+    <h1>Mapas</h1>
+    <p>
+      Así se ven los mapas de <code>public/assets/maps/</code> con sus casillas. Recarga tras
+      editarlos en Tiled.
+    </p>
+    <section id="mapas"></section>
     <script type="module" src="/arte/vista-previa.js"></script>
   </body>
 </html>

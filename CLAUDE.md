@@ -1,6 +1,6 @@
 # Bar Cubista
 
-Simulador 2D cenital de un bar español, estética cubista + pixel art, jugable con el ratón en el navegador.
+Simulador 2D en vista 3/4 (rejilla cuadrada, paredes y muebles de frente) de un bar español, estética cubista + pixel art, jugable con el ratón en el navegador.
 Este archivo es un **mapa**, no una enciclopedia: el detalle está en `docs/` y se lee solo cuando hace falta.
 
 ## Mapa

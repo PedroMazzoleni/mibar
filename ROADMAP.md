@@ -24,11 +24,12 @@ Marca con [x] solo cuando la tarea pase tests, lint y build. Una tarea cada vez,
 ## Fase 2 — El local
 
 - [x] 2.1 Primer plano del bar en Tiled (suelo, paredes, barra, mesas, cocina, puerta, baño)
-- [ ] 2.2 Cargar el mapa con capas de casillas y de objetos
-- [ ] 2.3 Casillas transitables / no transitables
-- [ ] 2.4 FurnitureSprite interactivo (barra, mesa, silla, grifo, cafetera, plancha, caja)
+- [x] 2.2 Cargar el mapa con capas de casillas y de objetos
+- [x] 2.3 Casillas transitables / no transitables
+- [x] 2.4 FurnitureSprite interactivo (barra, mesa, silla, grifo, cafetera, plancha, caja)
 - [ ] 2.5 Tooltip con el nombre del mueble y cursor de mano
 - [ ] 2.6 Orden de dibujo por profundidad
+- [ ] 2.7 Una barra arriba que inidique cuando esta cerrado y abierto y que ocupe como todo el div de arriba como si fuera una cabezera pero con el centro mas desstracado
       **Hecho cuando:** el bar se carga desde Tiled y cada mueble muestra su nombre.
 
 ## Fase 3 — Clientes
@@ -112,3 +113,6 @@ Marca con [x] solo cuando la tarea pase tests, lint y build. Una tarea cada vez,
 - 2026-11-08 · 1.5 · src/logic/camera.js (clampScroll, dragScroll, screenToWorld) con tests; TestScene con mundo de prueba 40×24 arrastrable, umbral de 3 px y resaltado sin desfase
 - 2026-11-08 · 1.6 · src/logic/debugInfo.js (formatDebugText) con tests y src/ui/DebugPanel.js: FPS, casilla bajo el ratón y último clic; F3 lo oculta (visible al arrancar solo en dev)
 - 2026-11-08 · 2.1 · public/assets/maps/bar.tmj (30×18, capas suelo, paredes, muebles y zonas) y tileset borrador arte/sprites/bar-tiles.json → public/assets/sprites/bar-tiles.png
+- 2026-11-08 · 2.2 · BarScene (sustituye a TestScene) carga bar.tmj: capas suelo, paredes y muros + muebles como sprites; src/logic/tiledMap.js (capas, muebles, zonas, puertas) con tests
+- 2026-11-08 · 2.3 · src/logic/navGrid.js: casillas transitables (suelo, sin pared salvo puertas, sin mueble que ocupe) y canMove con puertas en vertical y tabiques entre salas; F4 muestra lo no transitable
+- 2026-11-08 · 2.4 · src/objects/FurnitureSprite.js con detección al píxel para barra, mesa, silla, taburete, grifo, cafetera, plancha y caja (src/logic/furniture.js); brillo al pasar el ratón y el clic llega a la escena y al panel F3

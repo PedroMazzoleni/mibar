@@ -1,5 +1,5 @@
 import Phaser from 'phaser';
-import { BASE_WIDTH, BASE_HEIGHT } from '../logic/zoom.js';
+import { TILE_SIZE } from '../logic/grid.js';
 
 const BAR_WIDTH = 320;
 const BAR_HEIGHT = 24;
@@ -12,11 +12,12 @@ export default class PreloadScene extends Phaser.Scene {
   }
 
   preload() {
-    const x = Math.round((BASE_WIDTH - BAR_WIDTH) / 2);
-    const y = Math.round((BASE_HEIGHT - BAR_HEIGHT) / 2);
+    const { width, height } = this.scale;
+    const x = Math.round((width - BAR_WIDTH) / 2);
+    const y = Math.round((height - BAR_HEIGHT) / 2);
 
     this.add
-      .text(BASE_WIDTH / 2, y - 24, 'Cargando...', { fontSize: '20px', color: '#f2e8cf' })
+      .text(width / 2, y - 24, 'Cargando...', { fontSize: '20px', color: '#f2e8cf' })
       .setOrigin(0.5);
 
     // Marco
@@ -32,11 +33,18 @@ export default class PreloadScene extends Phaser.Scene {
       bar.fillRect(x, y, Math.round(BAR_WIDTH * value), BAR_HEIGHT);
     });
 
-    // Aquí se encolarán los assets existentes en public/assets/ (ahora no hay ninguno necesario)
+    // Mapa del bar y su tileset (también como spritesheet para los muebles).
+    // BASE_URL: '/' en desarrollo y '/mibar/' en el build de GitHub Pages
+    this.load.setPath(import.meta.env.BASE_URL);
+    this.load.tilemapTiledJSON('bar', 'assets/maps/bar.tmj');
+    this.load.spritesheet('bar-tiles', 'assets/sprites/bar-tiles.png', {
+      frameWidth: TILE_SIZE,
+      frameHeight: TILE_SIZE,
+    });
   }
 
   create() {
     // Retardo mínimo para que la barra no parpadee
-    this.time.delayedCall(MIN_DELAY_MS, () => this.scene.start('Test'));
+    this.time.delayedCall(MIN_DELAY_MS, () => this.scene.start('Bar'));
   }
 }

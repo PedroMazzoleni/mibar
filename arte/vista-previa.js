@@ -134,6 +134,75 @@ function pintar() {
   }
 }
 
+// Mapas de Tiled que se enseñan debajo de los sprites
+const MAPAS = ['bar.tmj'];
+const ESCALA_MAPA = 2;
+
+// Dibuja las capas de casillas y los objetos-casilla de un mapa con los frames del tileset
+function dibujarMapa(mapa) {
+  const t = mapa.tilewidth;
+  const lienzo = document.createElement('canvas');
+  lienzo.width = mapa.width * t * ESCALA_MAPA;
+  lienzo.height = mapa.height * t * ESCALA_MAPA;
+  const ctx = lienzo.getContext('2d');
+  ctx.fillStyle = '#1e1a1d';
+  ctx.fillRect(0, 0, lienzo.width, lienzo.height);
+  // Cada gid apunta a un frame del sprite que se llama como el tileset
+  const casillas = new Map();
+  for (const ts of mapa.tilesets) {
+    const sprite = sprites.find((s) => s.nombre === ts.name);
+    if (!sprite) throw new Error(`no hay sprite "${ts.name}" para el tileset del mapa`);
+    sprite.frames.forEach((frame, f) => casillas.set(ts.firstgid + f, { sprite, frame }));
+  }
+  const pintarCasilla = (gid, x, y) => {
+    const casilla = casillas.get(gid);
+    if (!casilla) return;
+    casilla.frame.forEach((fila, fy) => {
+      [...fila].forEach((c, fx) => {
+        const hex = paleta[c]?.hex;
+        if (!hex) return;
+        ctx.fillStyle = hex;
+        ctx.fillRect((x + fx) * ESCALA_MAPA, (y + fy) * ESCALA_MAPA, ESCALA_MAPA, ESCALA_MAPA);
+      });
+    });
+  };
+  for (const capa of mapa.layers) {
+    if (!capa.visible) continue;
+    if (capa.type === 'tilelayer') {
+      capa.data.forEach((gid, i) =>
+        pintarCasilla(gid, (i % capa.width) * t, Math.floor(i / capa.width) * t),
+      );
+    } else if (capa.type === 'objectgroup') {
+      // En Tiled los objetos-casilla se anclan por la esquina inferior izquierda
+      for (const o of capa.objects) if (o.gid) pintarCasilla(o.gid, o.x, o.y - o.height);
+    }
+  }
+  return lienzo;
+}
+
+async function pintarMapas() {
+  const cont = document.querySelector('#mapas');
+  cont.innerHTML = '';
+  for (const nombre of MAPAS) {
+    const titulo = document.createElement('h2');
+    titulo.textContent = nombre;
+    cont.append(titulo);
+    try {
+      const resp = await fetch(`${import.meta.env.BASE_URL}assets/maps/${nombre}`, {
+        cache: 'no-store',
+      });
+      if (!resp.ok) throw new Error(`no se pudo cargar ${nombre} (${resp.status})`);
+      cont.append(dibujarMapa(await resp.json()));
+    } catch (e) {
+      const error = document.createElement('span');
+      error.className = 'error';
+      error.textContent = e.message;
+      cont.append(error);
+    }
+  }
+}
+
 [zoom, fondo, rejilla].forEach((el) => el.addEventListener('input', pintar));
 pintarPaleta();
 pintar();
+pintarMapas();

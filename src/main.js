@@ -1,28 +1,31 @@
 import Phaser from 'phaser';
 import BootScene from './scenes/BootScene.js';
 import PreloadScene from './scenes/PreloadScene.js';
-import TestScene from './scenes/TestScene.js';
-import { BASE_WIDTH, BASE_HEIGHT, calcularZoomEntero } from './logic/zoom.js';
+import BarScene from './scenes/BarScene.js';
+import { calcularTamanoJuego } from './logic/zoom.js';
+
+// El lienzo ocupa toda la ventana: zoom entero y tamaño lógico ajustado a lo que cabe
+const inicial = calcularTamanoJuego(window.innerWidth, window.innerHeight);
 
 const game = new Phaser.Game({
   type: Phaser.AUTO,
   parent: 'app',
-  width: BASE_WIDTH,
-  height: BASE_HEIGHT,
+  width: inicial.width,
+  height: inicial.height,
   pixelArt: true,
   roundPixels: true,
-  backgroundColor: '#3b2f2a',
+  backgroundColor: '#1e1a1d',
   scale: {
     mode: Phaser.Scale.NONE,
-    autoCenter: Phaser.Scale.CENTER_BOTH,
-    zoom: calcularZoomEntero(window.innerWidth, window.innerHeight),
+    zoom: inicial.zoom,
   },
-  scene: [BootScene, PreloadScene, TestScene],
+  scene: [BootScene, PreloadScene, BarScene],
 });
 
-function ajustarZoom() {
-  game.scale.setZoom(calcularZoomEntero(window.innerWidth, window.innerHeight));
-  game.scale.refresh();
+function ajustarTamano() {
+  const { zoom, width, height } = calcularTamanoJuego(window.innerWidth, window.innerHeight);
+  game.scale.setZoom(zoom);
+  game.scale.resize(width, height);
 }
 
-window.addEventListener('resize', ajustarZoom);
+window.addEventListener('resize', ajustarTamano);

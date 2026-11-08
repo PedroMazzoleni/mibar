@@ -34,7 +34,8 @@ Dibujas los sprites de Bar Cubista como archivos de texto y el usuario los ve en
 - Tamaños: casillas del suelo 32×32, personajes 32×48, muebles en múltiplos de 32 (32×32, 64×32…), objetos pequeños (vasos, tapas) 16×16.
 - Cubismo + pixel art: planos facetados con 2–3 tonos cada uno, cortes diagonales entre planos,
   luz desde arriba a la izquierda, contorno con `0` que puede romperse entre planos.
-- Perspectivas mezcladas: el suelo se ve desde arriba, pero los objetos enseñan frente y parte superior a la vez.
+- Vista 3/4: el suelo se ve desde arriba; muebles, paredes y objetos enseñan su cara frontal y su parte superior a la vez.
+  Personajes de frente, de espaldas y de perfil. Detalles en `docs/estilo-arte.md`.
 - El acento rojo (`r`, `s`) se usa poco: un detalle por sprite como mucho.
 - Nada de personajes, logos o marcas reales.
 
