@@ -2,8 +2,10 @@ import Phaser from 'phaser';
 import { clampScroll, dragScroll, screenToWorld } from '../logic/camera.js';
 import { TILE_SIZE, worldToTile, tileToWorld, isInsideGrid } from '../logic/grid.js';
 import { readFurniture } from '../logic/tiledMap.js';
+import { getFurnitureLabel } from '../logic/furnitureNames.js';
 import { buildNavGrid } from '../logic/navGrid.js';
 import FurnitureSprite from '../objects/FurnitureSprite.js';
+import Tooltip from '../ui/Tooltip.js';
 import DebugPanel from '../ui/DebugPanel.js';
 
 // Píxeles mínimos de movimiento para considerar que es un arrastre y no un clic
@@ -50,6 +52,10 @@ export default class BarScene extends Phaser.Scene {
       .setDepth(DEPTH.highlight)
       .setVisible(false);
     this.hovered = null;
+
+    // Tooltip con el nombre del mueble y cursor de mano
+    this.tooltip = new Tooltip(this);
+    this.names = this.cache.json.get('furniture-names') ?? {};
 
     // Panel de depuración (F3): visible al arrancar solo en desarrollo
     this.debug = new DebugPanel(this, { visible: import.meta.env.DEV });
@@ -118,6 +124,7 @@ export default class BarScene extends Phaser.Scene {
           cam.scrollY = c.y;
         }
       }
+      this.refreshHoverUi(pointer);
       this.updateHighlight(pointer);
     });
     this.input.on('pointerup', (pointer, over) => {
@@ -128,17 +135,26 @@ export default class BarScene extends Phaser.Scene {
         if (target) this.onFurnitureClick(target);
       }
       this.resetDrag();
+      // Al soltar sobre un mueble, el tooltip vuelve a mostrarse
+      this.refreshHoverUi(pointer);
     });
     this.input.on('gameobjectover', (pointer, obj) => {
-      if (obj instanceof FurnitureSprite) this.setHovered(obj);
+      if (obj instanceof FurnitureSprite) {
+        this.setHovered(obj);
+        this.refreshHoverUi(pointer);
+      }
     });
     this.input.on('gameobjectout', (pointer, obj) => {
-      if (obj === this.hovered) this.setHovered(null);
+      if (obj === this.hovered) {
+        this.setHovered(null);
+        this.refreshHoverUi(pointer);
+      }
     });
     this.input.on('gameout', () => {
       this.resetDrag();
       this.highlight.setVisible(false);
       this.setHovered(null);
+      this.refreshHoverUi(this.input.activePointer);
       this.debug.setHover(null);
     });
   }
@@ -156,6 +172,24 @@ export default class BarScene extends Phaser.Scene {
     this.hovered?.setHovered(false);
     this.hovered = sprite;
     sprite?.setHovered(true);
+  }
+
+  // Tooltip y cursor de mano: solo sobre un mueble interactivo y sin arrastrar la cámara
+  refreshHoverUi(pointer) {
+    if (this.hovered && !this.dragging) {
+      const label = getFurnitureLabel(this.hovered.furnitureType, this.names);
+      if (label !== this.shownLabel) {
+        this.shownLabel = label;
+        this.tooltip.show(label, pointer);
+      } else {
+        this.tooltip.move(pointer);
+      }
+      this.input.setDefaultCursor('pointer');
+    } else {
+      this.shownLabel = null;
+      this.tooltip.hide();
+      this.input.setDefaultCursor('');
+    }
   }
 
   // Casillas no transitables en rojo translúcido (F4)

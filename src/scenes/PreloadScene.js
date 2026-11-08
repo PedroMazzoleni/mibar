@@ -36,6 +36,7 @@ export default class PreloadScene extends Phaser.Scene {
     // Mapa del bar y su tileset (también como spritesheet para los muebles).
     // BASE_URL: '/' en desarrollo y '/mibar/' en el build de GitHub Pages
     this.load.setPath(import.meta.env.BASE_URL);
+    this.load.json('furniture-names', 'assets/data/furniture-names.json');
     this.load.tilemapTiledJSON('bar', 'assets/maps/bar.tmj');
     this.load.spritesheet('bar-tiles', 'assets/sprites/bar-tiles.png', {
       frameWidth: TILE_SIZE,

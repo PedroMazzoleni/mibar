@@ -27,7 +27,7 @@ Marca con [x] solo cuando la tarea pase tests, lint y build. Una tarea cada vez,
 - [x] 2.2 Cargar el mapa con capas de casillas y de objetos
 - [x] 2.3 Casillas transitables / no transitables
 - [x] 2.4 FurnitureSprite interactivo (barra, mesa, silla, grifo, cafetera, plancha, caja)
-- [ ] 2.5 Tooltip con el nombre del mueble y cursor de mano
+- [x] 2.5 Tooltip con el nombre del mueble y cursor de mano
 - [ ] 2.6 Orden de dibujo por profundidad
 - [ ] 2.7 Una barra arriba que inidique cuando esta cerrado y abierto y que ocupe como todo el div de arriba como si fuera una cabezera pero con el centro mas desstracado
       **Hecho cuando:** el bar se carga desde Tiled y cada mueble muestra su nombre.
@@ -116,3 +116,4 @@ Marca con [x] solo cuando la tarea pase tests, lint y build. Una tarea cada vez,
 - 2026-11-08 · 2.2 · BarScene (sustituye a TestScene) carga bar.tmj: capas suelo, paredes y muros + muebles como sprites; src/logic/tiledMap.js (capas, muebles, zonas, puertas) con tests
 - 2026-11-08 · 2.3 · src/logic/navGrid.js: casillas transitables (suelo, sin pared salvo puertas, sin mueble que ocupe) y canMove con puertas en vertical y tabiques entre salas; F4 muestra lo no transitable
 - 2026-11-08 · 2.4 · src/objects/FurnitureSprite.js con detección al píxel para barra, mesa, silla, taburete, grifo, cafetera, plancha y caja (src/logic/furniture.js); brillo al pasar el ratón y el clic llega a la escena y al panel F3
+- 2026-11-08 · 2.5 · Tooltip (src/ui/Tooltip.js) con nombres de public/assets/data/furniture-names.json y posición limitada a la pantalla (src/logic/furnitureNames.js); cursor de mano solo sobre muebles interactivos; se oculta al arrastrar
