@@ -2,6 +2,7 @@ import Phaser from 'phaser';
 import BootScene from './scenes/BootScene.js';
 import PreloadScene from './scenes/PreloadScene.js';
 import BarScene from './scenes/BarScene.js';
+import HudScene from './scenes/HudScene.js';
 import { calcularTamanoJuego } from './logic/zoom.js';
 
 // El lienzo ocupa toda la ventana: zoom entero y tamaño lógico ajustado a lo que cabe
@@ -19,7 +20,7 @@ const game = new Phaser.Game({
     mode: Phaser.Scale.NONE,
     zoom: inicial.zoom,
   },
-  scene: [BootScene, PreloadScene, BarScene],
+  scene: [BootScene, PreloadScene, BarScene, HudScene],
 });
 
 function ajustarTamano() {

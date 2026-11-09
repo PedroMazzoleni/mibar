@@ -11,6 +11,7 @@ import {
   depthOf,
   moverDepthSub,
 } from '../logic/iso.js';
+import { layoutTopBar } from '../logic/barStatus.js';
 import { findLayer, readFurniture } from '../logic/tiledMap.js';
 import { getFurnitureLabel } from '../logic/furnitureNames.js';
 import { buildNavGrid } from '../logic/navGrid.js';
@@ -88,6 +89,8 @@ export default class BarScene extends Phaser.Scene {
 
     // Panel de depuración (F3): visible al arrancar solo en desarrollo
     this.debug = new DebugPanel(this, { visible: import.meta.env.DEV });
+    // HUD en paralelo, por encima del bar
+    this.scene.launch('Hud');
 
     const cam = this.cameras.main;
     cam.setBackgroundColor('#1e1a1d');
@@ -129,6 +132,7 @@ export default class BarScene extends Phaser.Scene {
 
   setupInput(cam) {
     this.input.on('pointerdown', (pointer) => {
+      if (this.isOverTopBar(pointer)) return;
       this.dragStart = {
         scroll: { x: cam.scrollX, y: cam.scrollY },
         pointer: { x: pointer.x, y: pointer.y },
@@ -153,10 +157,22 @@ export default class BarScene extends Phaser.Scene {
           cam.scrollY = c.y;
         }
       }
+      // Sobre la barra superior no hay resaltado, hover ni tooltip
+      if (this.isOverTopBar(pointer)) {
+        this.setHovered(null);
+        this.refreshHoverUi(pointer);
+        this.updateHighlight(pointer);
+        return;
+      }
       this.refreshHoverUi(pointer);
       this.updateHighlight(pointer);
     });
     this.input.on('pointerup', (pointer, over) => {
+      // Un clic sobre la barra superior no activa casillas ni muebles
+      if (this.isOverTopBar(pointer)) {
+        this.resetDrag();
+        return;
+      }
       // Clic sin arrastre: casilla pulsada y, si lo hay, el mueble de encima
       if (this.dragStart && !this.dragging) {
         this.debug.setClick(this.tileAt(pointer));
@@ -168,7 +184,7 @@ export default class BarScene extends Phaser.Scene {
       this.refreshHoverUi(pointer);
     });
     this.input.on('gameobjectover', (pointer, obj) => {
-      if (obj instanceof FurnitureSprite) {
+      if (obj instanceof FurnitureSprite && !this.isOverTopBar(pointer)) {
         this.setHovered(obj);
         this.refreshHoverUi(pointer);
       }
@@ -186,6 +202,11 @@ export default class BarScene extends Phaser.Scene {
       this.refreshHoverUi(this.input.activePointer);
       this.debug.setHover(null);
     });
+  }
+
+  // El puntero está sobre la barra superior (la dibuja HudScene)
+  isOverTopBar(pointer) {
+    return pointer.y < layoutTopBar(this.scale.width).barHeight;
   }
 
   update() {
@@ -302,7 +323,7 @@ export default class BarScene extends Phaser.Scene {
   }
 
   updateHighlight(pointer) {
-    const tile = this.tileAt(pointer);
+    const tile = this.isOverTopBar(pointer) ? null : this.tileAt(pointer);
     this.debug.setHover(tile);
     if (!tile) {
       this.highlight.setVisible(false);

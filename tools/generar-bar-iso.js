@@ -350,17 +350,102 @@ function portezuela() {
   });
   return c;
 }
+// Vitrina refrigerada de cristal curvo (cuarto de cilindro a lo largo de la barra), con tres
+// bandejas de tapas dentro. Se pinta lanzando un rayo por píxel: el primer sólido que toca manda.
 const vitrina = () => {
   const c = barra();
-  const V = ref('vitrina de tapas');
-  bloque(c, {
-    u: [0.08, 0.92],
-    v: [0.3, 0.75],
-    z: [18, 27],
-    arriba: () => 'E',
-    sur: zona(V, 0, 3, 32, 16),
-    este: () => 'f',
-  });
+  const [U0, U1] = [0.04, 0.96];
+  const [VB, VC, VF] = [0.3, 0.32, 0.82]; // pared de atrás, arranque de la curva, frente
+  const [ZB, ZT] = [20, 27]; // suelo de la vitrina y techo del cristal
+  const enU = (u) => u >= U0 && u <= U1;
+  const zocalo = (u, v, z) => enU(u) && v >= VB - 0.02 && v <= VF && z >= 18 && z < ZB;
+  const cupula = (u, v, z) => {
+    if (!enU(u) || v < VB || v > VF || z < ZB || z > ZT) return false;
+    if (v <= VC) return true;
+    const dv = (v - VC) / (VF - VC);
+    const dz = (z - ZB) / (ZT - ZB);
+    return dv * dv + dz * dz <= 1;
+  };
+  // tres bandejas a lo largo de u: tortilla, jamón y ensaladilla con aceitunas
+  const TAPAS = [
+    { top: '6', lado: '5', mota: '7' },
+    { top: '*', lado: 'U', mota: '%' },
+    { top: '8', lado: '7', mota: 'b' },
+  ];
+  const bandeja = (u) => {
+    const s = (u - U0) / (U1 - U0);
+    const i = Math.min(2, Math.floor(s * 3));
+    const local = s * 3 - i;
+    return { i, borde: local < 0.1 || local > 0.9 };
+  };
+  const alturaTapa = (u, v) => {
+    const { borde } = bandeja(u);
+    if (borde || v < VB + 0.05 || v > VF - 0.12) return ZB + 0.5;
+    return ZB + 2.5;
+  };
+  const tapa = (u, v, z) => enU(u) && v > VB && v < VF - 0.04 && z >= ZB && z < alturaTapa(u, v);
+
+  const visto = Array.from({ length: H }, () => Array(W).fill(false));
+  for (let Y = 0; Y < H; Y++)
+    for (let X = 0; X < W; X++) {
+      const a = (X + 0.5 - 16) / 16;
+      const punto = (v) => [v + a, v, TOP + (2 * v + a) * 8 - (Y + 0.5)];
+      let cristal = null;
+      let ch = null;
+      for (let v = 1; v >= 0; v -= 0.002) {
+        const [u, , z] = punto(v);
+        const [uA, , zA] = punto(v + 0.002);
+        if (!cristal && cupula(u, v, z)) {
+          // entra por la tapa del extremo este (acero) o por el cristal
+          if (uA > U1) {
+            const t = (z - ZB) / (ZT - ZB);
+            ch = t > 0.85 || v > VF - 0.03 ? 'e' : 'f';
+            break;
+          }
+          const ang = v <= VC ? Math.PI / 2 : Math.atan2((z - ZB) / (ZT - ZB), (v - VC) / (VF - VC));
+          cristal = { ang };
+          continue;
+        }
+        if (tapa(u, v, z)) {
+          const { i, borde } = bandeja(u);
+          const arriba = zA >= alturaTapa(uA, v + 0.002);
+          const t = TAPAS[i];
+          if (borde) ch = arriba ? 'T' : 'g';
+          else if (!arriba) ch = t.lado;
+          else ch = (Math.floor(u * 40) * 7 + Math.floor(v * 40) * 3) % 5 === 0 ? t.mota : t.top;
+          break;
+        }
+        if (cupula(u, v, z)) continue;
+        if (zocalo(u, v, z)) {
+          if (uA > U1) ch = 'e';
+          else ch = zA >= ZB ? 'g' : z > 18.8 ? 'f' : 'e';
+          break;
+        }
+        if (cristal) {
+          ch = 'E'; // fondo del cristal sin nada detrás
+          break;
+        }
+      }
+      if (cristal) {
+        // brillo del cristal: veta clara en la curva y tapa casi opaca
+        const g = cristal.ang;
+        if (g > 1.0 && g < 1.18) ch = '9';
+        else if (g > 1.35) ch = ch === 'E' || !ch ? 'E' : (X + Y) % 2 ? 'E' : ch;
+        else if (g < 0.12) ch = 'g';
+        else ch = ch ?? 'E';
+      }
+      if (ch) {
+        pon(c, X, Y, ch);
+        visto[Y][X] = true;
+      }
+    }
+  // contorno de acero por arriba y por los lados de la silueta
+  for (let Y = 0; Y < H; Y++)
+    for (let X = 0; X < W; X++) {
+      if (!visto[Y][X]) continue;
+      const fuera = (x, y) => !visto[y]?.[x];
+      if (fuera(X, Y - 1) || fuera(X - 1, Y) || fuera(X + 1, Y)) pon(c, X, Y, 'e');
+    }
   return c;
 };
 

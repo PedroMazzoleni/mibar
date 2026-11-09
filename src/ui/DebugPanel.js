@@ -19,7 +19,7 @@ export default class DebugPanel {
       lineSpacing: 2,
     });
     this.container = scene.add
-      .container(4, 4, [this.bg, this.text])
+      .container(4, 20, [this.bg, this.text])
       .setScrollFactor(0)
       .setDepth(1000)
       .setVisible(visible);
