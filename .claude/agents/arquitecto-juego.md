@@ -30,7 +30,7 @@ No escribes código: decides qué hay que hacer, en qué archivos, y cómo se co
    Riesgos: <lo que puede salir mal>
    ```
 3. Sprites: si la tarea necesita un elemento visual nuevo, lístalo con nombre en inglés en kebab-case y tamaño
-   (casillas 32×32, personajes 32×48, muebles en múltiplos de 32, objetos pequeños 16×16). Antes, mira `arte/sprites/`:
+   (isométrico: rombos de 32×16, frames de 32×48, personajes 16×24, objetos pequeños 16×16; ver docs/estilo-arte.md). Antes, mira `arte/sprites/`:
    si ya existe, reutilízalo y no lo vuelvas a listar como nuevo. Si la tarea no necesita sprites, no pongas la línea.
 4. Referencias: lee la sección "## Referencias" de `docs/estilo-arte.md` (es texto, NO abras las imágenes)
    y lista solo las imágenes que tengan que ver con esta tarea (ej. la de la barra si la tarea coloca la barra).

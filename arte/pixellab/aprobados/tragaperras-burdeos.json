@@ -1,0 +1,35 @@
+{
+  "asset": "tragaperras-burdeos",
+  "origen": "arte/pixellab/pendientes/tragaperras/v1.png",
+  "tipo": "mueble isométrico de 1 casilla (alto)",
+  "reemplaza": "tragaperras burdeos",
+  "casilla": [14, 2],
+  "herramienta": "pixellab.create_1_direction_object",
+  "parametros": {
+    "view": "top-down",
+    "size": "48 (lo fija la imagen de estilo)",
+    "candidatos": 16,
+    "palette": "los 52 colores de arte/paleta.json",
+    "style_images": ["frame \"barra\" de arte/sprites/bar-tiles.json centrado en 48x48"],
+    "coste": "10 generaciones (tanda compartida tragaperras + maquina-tabaco)",
+    "tanda_pixellab": "5394900c-c314-405a-9a12-fadff29ab3b1"
+  },
+  "pixellab_id": "8646cdae-66f2-47a6-9d33-df55fccb98de",
+  "prompt": "isometric 2:1 pixel art, 32px tile grid, light from top-left, cozy Spanish tapas bar, subtle cubist touch, limited palette, clean dark outlines, transparent background. Single tall arcade-style bar machine standing on one isometric floor tile, seen from above at a 2:1 isometric angle: front panel on the left visible face, right side face darker, lighter top. Narrow footprint, about 24 px wide and 40 px tall. Item: isometric Spanish bar slot machine (tragaperras), burgundy wine-red cabinet, glowing reel window with cherries and bars, bright lit marquee on top, coin tray and buttons, front panel on the left face, right face darker",
+  "fecha_generado": "2026-11-09",
+  "fecha_aprobado": "2026-11-09",
+  "aprobado_por": "Pedro",
+  "tamano": "32x48 px (frame del tileset bar-tiles)",
+  "anclaje": {
+    "x": 16,
+    "y": 48,
+    "que": "centro inferior del rombo de la casilla, como el resto de frames de bar-tiles"
+  },
+  "retoques": [
+    "Recortado de 48x48 a 32x48 desde x=7 (el rombo de la huella queda abajo, con la esquina superior en (16,32)).",
+    "Quitada la plataforma de madera que PixelLab pintó bajo la máquina: la base es transparente. Quedan 1-3 px transparentes sueltos en la base del mueble, sin importancia a x1.",
+    "Sin sombra proyectada: arte/paleta.json no tiene todavía el color h (humo/sombra) que pide docs/estilo-arte.md."
+  ],
+  "paleta": "Generado con la paleta del proyecto: 100% de píxeles en arte/paleta.json. El ajuste (.paleta.png) no cambia nada.",
+  "nota": "Burdeos (para sustituir a \"tragaperras burdeos\"). Frontal claro con rodillos y marquesina; se lee bien a x1."
+}

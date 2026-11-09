@@ -5,7 +5,7 @@ public/assets/
 ├── sprites/ maps/ sounds/ fonts/
 └── data/            → products.json, recipes.json, customers.json
 src/
-├── main.js          → configuración de Phaser (640×360, pixelArt, zoom entero)
+├── main.js          → configuración de Phaser (480×270, pixelArt, zoom entero a pantalla completa)
 ├── scenes/          → Boot, Preload, MainMenu, Bar, Market, DaySummary, Hud
 ├── objects/         → CustomerSprite, FurnitureSprite, PlayerSprite
 ├── ui/              → Button, Panel, Tooltip, OrderTicket
@@ -27,4 +27,5 @@ tests/               → Vitest sobre src/logic
 - Clases de escena en PascalCase (`BarScene.js`); módulos de lógica en camelCase (`cashRegister.js`).
 - Contenido del juego (precios, recetas, tipos de cliente) en JSON, nunca escrito en el código.
 - Interfaz dibujada en Phaser (`HudScene`), no con HTML.
-- Casillas de 32×32 (`TILE_SIZE` en `src/logic/grid.js`); coordenadas de dibujo redondeadas a enteros.
+- Mapa isométrico de Tiled: rombos de 32×16 y frames de tileset de 32×48. La proyección casilla ↔ pantalla está en `src/logic/iso.js` (`gridToScreen`, `screenToGrid`); coordenadas de dibujo redondeadas a enteros.
+- El mapa del bar se genera con `tools/generar-bar-iso.js` (a partir de `arte/referencia/bar-tiles-2d.json`).

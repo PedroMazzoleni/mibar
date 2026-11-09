@@ -1,5 +1,5 @@
-export const BASE_WIDTH = 640;
-export const BASE_HEIGHT = 360;
+export const BASE_WIDTH = 480;
+export const BASE_HEIGHT = 270;
 
 export function calcularZoomEntero(anchoVentana, altoVentana) {
   const factor = Math.min(anchoVentana / BASE_WIDTH, altoVentana / BASE_HEIGHT);

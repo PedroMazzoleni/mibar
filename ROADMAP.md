@@ -27,10 +27,19 @@ Marca con [x] solo cuando la tarea pase tests, lint y build. Una tarea cada vez,
 - [x] 2.2 Cargar el mapa con capas de casillas y de objetos
 - [x] 2.3 Casillas transitables / no transitables
 - [x] 2.4 FurnitureSprite interactivo (barra, mesa, silla, grifo, cafetera, plancha, caja)
-- [x] 2.5 Tooltip con el nombre del mueble y cursor de mano
-- [ ] 2.6 Orden de dibujo por profundidad
+- [x] 2.iso Migración a isométrica
+  - [x] a) Cambiar la resolución base a 480×270 en la configuración de Phaser
+  - [x] b) src/logic/iso.js con gridToScreen y screenToGrid + tests
+  - [x] c) Suelo en rombos y clic que resalte la casilla (hecho directamente en BarScene, sin escena de prueba aparte)
+  - [x] d) Adaptar a isométrico lo hecho en 2.1–2.4:
+        · logic: zoom.js (base 480×270), grid.js (proyección cuadrada → iso.js), tiledMap.js (coordenadas de objetos y zonas de un mapa iso de Tiled), navGrid.js (paredes en los bordes de las casillas y puertas en el borde norte/oeste)
+        · escenas y objetos: BarScene (colocación, resaltado y F4 en rombos, casilla bajo el ratón), FurnitureSprite (anclaje con gridToScreen), PreloadScene (frames de 32×48)
+        · mapa y arte: bar.tmj como mapa isométrico de Tiled (32×16), tileset entero redibujado en 32×48 a partir del 2D (suelo con luz, paredes del fondo, barra, mesas, sillas, taburetes, cocina, baño, máquinas), generador del mapa en tools/ y vista previa de mapas de sprites.html
+  - [x] e) Orden de dibujo con setDepth por (columna + fila) y paredes solo del fondo (norte y oeste; delante, solo un zócalo bajo)
+- [x] 2.5 Tooltip con el nombre del mueble y cursor de mano (sobre el mapa isométrico)
+- [ ] 2.6 Orden de dibujo por profundidad isométrica también para personajes y objetos que se mueven
 - [ ] 2.7 Una barra arriba que inidique cuando esta cerrado y abierto y que ocupe como todo el div de arriba como si fuera una cabezera pero con el centro mas desstracado
-      **Hecho cuando:** el bar se carga desde Tiled y cada mueble muestra su nombre.
+      **Hecho cuando:** el bar se carga desde un mapa isométrico de Tiled y cada mueble muestra su nombre.
 
 ## Fase 3 — Clientes
 
@@ -117,3 +126,4 @@ Marca con [x] solo cuando la tarea pase tests, lint y build. Una tarea cada vez,
 - 2026-11-08 · 2.3 · src/logic/navGrid.js: casillas transitables (suelo, sin pared salvo puertas, sin mueble que ocupe) y canMove con puertas en vertical y tabiques entre salas; F4 muestra lo no transitable
 - 2026-11-08 · 2.4 · src/objects/FurnitureSprite.js con detección al píxel para barra, mesa, silla, taburete, grifo, cafetera, plancha y caja (src/logic/furniture.js); brillo al pasar el ratón y el clic llega a la escena y al panel F3
 - 2026-11-08 · 2.5 · Tooltip (src/ui/Tooltip.js) con nombres de public/assets/data/furniture-names.json y posición limitada a la pantalla (src/logic/furnitureNames.js); cursor de mano solo sobre muebles interactivos; se oculta al arrastrar
+- 2026-11-08 · 2.iso · Migración a isométrica: base 480×270; src/logic/iso.js (gridToScreen, screenToGrid, mapOrigin, depthOf) con tests; tiledMap y navGrid para mapa iso de Tiled (paredes en los bordes, puertas norte/oeste); tools/generar-bar-iso.js crea bar.tmj (16×10, 32×16) y el tileset de 32×48 desde arte/referencia/bar-tiles-2d.json; BarScene dibuja por columna + fila con rombo bajo el ratón y F4 en rombos; vista previa de mapas en iso

@@ -1,7 +1,15 @@
 import Phaser from 'phaser';
 import { clampScroll, dragScroll, screenToWorld } from '../logic/camera.js';
-import { TILE_SIZE, worldToTile, tileToWorld, isInsideGrid } from '../logic/grid.js';
-import { readFurniture } from '../logic/tiledMap.js';
+import { isInsideGrid } from '../logic/grid.js';
+import {
+  gridToScreen,
+  screenToGrid,
+  mapOrigin,
+  mapPixelSize,
+  tileCorners,
+  depthOf,
+} from '../logic/iso.js';
+import { findLayer, readFurniture } from '../logic/tiledMap.js';
 import { getFurnitureLabel } from '../logic/furnitureNames.js';
 import { buildNavGrid } from '../logic/navGrid.js';
 import FurnitureSprite from '../objects/FurnitureSprite.js';
@@ -13,44 +21,50 @@ const DRAG_THRESHOLD = 3;
 // Tecla que muestra/oculta las casillas no transitables
 const NAV_KEY = 'F4';
 
-const DEPTH = { floor: 0, walls: 1, furniture: 2, wallTops: 3, overlay: 4, highlight: 5 };
+// Profundidad: el suelo debajo de todo; paredes, muebles y zócalos ordenados por columna + fila.
+// Dentro de una casilla, la pared del fondo va detrás del mueble y el zócalo de delante, encima.
+// El rombo bajo el ratón se pinta sobre el suelo; las casillas de F4, por encima de todo el bar.
+const DEPTH = { floor: 0, highlight: 1, overlay: 900 };
+const DEPTH_BASE = 10;
+const DEPTH_STEP = 10;
+const SUB = { paredes: 0, furniture: 2, zocalos: 5 };
+const TILE_LAYERS = ['suelo', 'paredes', 'zocalos'];
 
-// Escena del bar: mapa de Tiled con sus muebles, cámara arrastrable y rejilla de navegación
+const depthIn = (col, row, sub) => DEPTH_BASE + depthOf(col, row) * DEPTH_STEP + sub;
+
+// Escena del bar: mapa isométrico de Tiled con sus muebles, cámara arrastrable y navegación
 export default class BarScene extends Phaser.Scene {
   constructor() {
     super('Bar');
   }
 
   create() {
-    const map = this.make.tilemap({ key: 'bar' });
-    const tileset = map.addTilesetImage('bar-tiles', 'bar-tiles');
-    map.createLayer('suelo', tileset).setDepth(DEPTH.floor);
-    map.createLayer('paredes', tileset).setDepth(DEPTH.walls);
-    map.createLayer('muros', tileset).setDepth(DEPTH.wallTops);
+    // El JSON crudo de Tiled es el que entiende la lógica pura
+    const mapData = this.cache.json.get('bar-map');
+    this.cols = mapData.width;
+    this.rows = mapData.height;
+    this.origin = mapOrigin(this.rows);
+    const size = mapPixelSize(this.cols, this.rows);
+    this.worldW = size.width;
+    this.worldH = size.height;
 
-    // El JSON crudo es el que entiende la lógica pura
-    const mapData = this.cache.tilemap.get('bar').data;
-    this.furniture = readFurniture(mapData).map((f) =>
-      new FurnitureSprite(this, f, 'bar-tiles').setDepth(DEPTH.furniture),
-    );
+    this.drawTileLayers(mapData);
+    // Los muebles que comparten casilla (grifo sobre la barra) siguen el orden del mapa
+    this.furniture = readFurniture(mapData).map((f, i) => {
+      const { x, y } = this.bottomCorner(f.col, f.row);
+      return new FurnitureSprite(this, f, 'bar-tiles', x, y).setDepth(
+        depthIn(f.col, f.row, SUB.furniture + i / 1000),
+      );
+    });
     this.nav = buildNavGrid(mapData);
-
-    this.cols = map.width;
-    this.rows = map.height;
-    this.worldW = map.widthInPixels;
-    this.worldH = map.heightInPixels;
 
     this.navOverlay = this.drawNavOverlay().setDepth(DEPTH.overlay).setVisible(false);
     this.input.keyboard
       .addKey(NAV_KEY)
       .on('down', () => this.navOverlay.setVisible(!this.navOverlay.visible));
 
-    // Resaltado de la casilla bajo el ratón (el mueble se ilumina por su cuenta)
-    this.highlight = this.add
-      .rectangle(0, 0, TILE_SIZE, TILE_SIZE, 0xc8553d, 0.35)
-      .setOrigin(0, 0)
-      .setDepth(DEPTH.highlight)
-      .setVisible(false);
+    // Rombo de la casilla bajo el ratón (el mueble se ilumina por su cuenta)
+    this.highlight = this.add.graphics().setDepth(DEPTH.highlight).setVisible(false);
     this.hovered = null;
 
     // Tooltip con el nombre del mueble y cursor de mano
@@ -192,15 +206,42 @@ export default class BarScene extends Phaser.Scene {
     }
   }
 
+  // Esquina inferior del rombo de una casilla: ahí se apoyan los frames del tileset
+  bottomCorner(col, row) {
+    return gridToScreen(col + 1, row + 1, this.origin);
+  }
+
+  // Capas de casillas como imágenes sueltas para ordenarlas por profundidad con los muebles
+  drawTileLayers(mapData) {
+    for (const name of TILE_LAYERS) {
+      const layer = findLayer(mapData, name);
+      if (!layer) continue;
+      layer.data.forEach((gid, i) => {
+        if (!gid) return;
+        const col = i % layer.width;
+        const row = Math.floor(i / layer.width);
+        const { x, y } = this.bottomCorner(col, row);
+        const depth = name === 'suelo' ? DEPTH.floor : depthIn(col, row, SUB[name]);
+        this.add
+          .image(x, y, 'bar-tiles', gid - 1)
+          .setOrigin(0.5, 1)
+          .setDepth(depth);
+      });
+    }
+  }
+
+  fillTile(g, col, row) {
+    g.fillPoints(tileCorners(col, row, this.origin), true);
+  }
+
   // Casillas no transitables en rojo translúcido (F4)
   drawNavOverlay() {
     const g = this.add.graphics();
     g.fillStyle(0xc8553d, 0.35);
     for (let row = 0; row < this.rows; row++) {
       for (let col = 0; col < this.cols; col++) {
-        if (this.nav.walkable[row][col]) continue;
-        const { x, y } = tileToWorld(col, row);
-        g.fillRect(x, y, TILE_SIZE, TILE_SIZE);
+        // Lo de fuera del local (sin sala) no se marca
+        if (!this.nav.walkable[row][col] && this.nav.room[row][col]) this.fillTile(g, col, row);
       }
     }
     return g;
@@ -217,7 +258,7 @@ export default class BarScene extends Phaser.Scene {
     // (matriz de la cámara, se recalcula en preRender) reflejan el scroll asignado en este frame
     const cam = this.cameras.main;
     const world = screenToWorld(cam.scrollX, cam.scrollY, pointer.x, pointer.y, cam.zoom);
-    const { col, row } = worldToTile(world.x, world.y);
+    const { col, row } = screenToGrid(world.x, world.y, this.origin);
     return isInsideGrid(col, row, this.cols, this.rows) ? { col, row } : null;
   }
 
@@ -228,7 +269,8 @@ export default class BarScene extends Phaser.Scene {
       this.highlight.setVisible(false);
       return;
     }
-    const { x, y } = tileToWorld(tile.col, tile.row);
-    this.highlight.setPosition(x, y).setVisible(true);
+    this.highlight.clear().fillStyle(0xc8553d, 0.35);
+    this.fillTile(this.highlight, tile.col, tile.row);
+    this.highlight.setVisible(true);
   }
 }

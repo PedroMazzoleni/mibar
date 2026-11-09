@@ -1,0 +1,134 @@
+{
+  "asset": "suelo-terrazo",
+  "tipo": "tile de suelo isométrico",
+  "herramienta": "pixellab.create_isometric_tile",
+  "parametros": {
+    "size": 32,
+    "tile_shape": "thin tile",
+    "detail": "medium detail",
+    "shading": "basic shading"
+  },
+  "tamano": "32x32 px (lienzo)",
+  "fecha": "2026-11-08",
+  "estado": "pendiente de revisión",
+  "geometria": {
+    "rombo": "La tapa es un rombo 2:1 de 32x16 (x 0-31, y 11-26), pendiente correcta de 2 px por fila.",
+    "grosor": "Debajo de la tapa hay un canto de ~5 px (filas 27-31): el tile no es un rombo plano.",
+    "anclaje": {
+      "x": 16,
+      "y": 11,
+      "que": "esquina superior del rombo de la tapa = punto gridToScreen(col,row)"
+    },
+    "encaje_frame_proyecto": "El proyecto usa frames de 32x48 con el rombo en las 16 filas de abajo (esquina superior en y=32). Al encajar este tile, el canto de 5 px sobresale 5 px por debajo del frame. Opciones en la revisión: recortar el canto (perdiendo la cara lateral) o dibujar el suelo con origen propio. No se ha recortado.",
+    "repeticion": "Probado en rejilla 3x3 con el anclaje (16,11): encaja sin huecos ni solapes raros."
+  },
+  "paleta": "Ningún color coincide exactamente con arte/paleta.json (100% de los píxeles fuera). Sin cuantizar todavía.",
+  "variantes": {
+    "v1": {
+      "archivo": "v1.png",
+      "pixellab_id": "54838eeb-2c2f-43c8-83d1-ff0e0f7bb1d6",
+      "seed": 1101,
+      "outline": "lineless",
+      "prompt": "spanish bar terrazzo floor tile, warm cream and ochre base with small speckled chips of sienna brown, olive and blue-grey stone fragments, flat polished floor, light from top-left, pixel art",
+      "dimensiones": [
+        32,
+        32
+      ],
+      "bbox_opaco": {
+        "x": [
+          0,
+          31
+        ],
+        "y": [
+          11,
+          31
+        ]
+      },
+      "colores": 14,
+      "fuera_de_paleta": {
+        "colores": 14,
+        "pixeles": 429,
+        "de": 429,
+        "lista": [
+          "#dfc7af",
+          "#a35d55",
+          "#632946",
+          "#6a2f44",
+          "#733149",
+          "#281637",
+          "#3d223f",
+          "#915453",
+          "#b47063",
+          "#2d2447",
+          "#b9826d",
+          "#4f263d",
+          "#c69476",
+          "#2c194b"
+        ]
+      },
+      "semitransparentes": 0,
+      "nota": "Casi lisa: apenas hay granos de terrazo; la tapa es un crema plano (#dfc7af) y el canto tira a morado. Al repetirse se ven juntas finas (los bordes de la tapa son más oscuros): parece baldosa grande, no terrazo continuo."
+    },
+    "v2": {
+      "archivo": "v2.png",
+      "pixellab_id": "3d689212-76c9-4008-87f3-f9815c7d50fd",
+      "seed": 2202,
+      "outline": "single color outline",
+      "prompt": "old spanish tapas bar terrazzo floor tile, beige ochre base with angular cubist chips of dark brown, sienna, cream and blue-grey marble, faceted flat floor surface, light from top-left, pixel art",
+      "dimensiones": [
+        32,
+        32
+      ],
+      "bbox_opaco": {
+        "x": [
+          0,
+          31
+        ],
+        "y": [
+          11,
+          31
+        ]
+      },
+      "colores": 30,
+      "fuera_de_paleta": {
+        "colores": 30,
+        "pixeles": 468,
+        "de": 468,
+        "lista": [
+          "#ab7355",
+          "#e7c599",
+          "#71343a",
+          "#e9caa3",
+          "#672b34",
+          "#e5ddd2",
+          "#ebceac",
+          "#3f1224",
+          "#e2d3c1",
+          "#d8aa7c",
+          "#41122f",
+          "#c88651",
+          "#d6c8c2",
+          "#925844",
+          "#255a75",
+          "#51152c",
+          "#562243",
+          "#7b4055",
+          "#381740",
+          "#4f2a6d",
+          "#b65c40",
+          "#303a55",
+          "#4b5083",
+          "#883239",
+          "#372936",
+          "#da744b",
+          "#97132a",
+          "#a34462",
+          "#b95e66",
+          "#644871"
+        ]
+      },
+      "semitransparentes": 0,
+      "nota": "Manchas grandes y angulosas (más mármol/patchwork que terrazo de grano fino); 30 colores; algún píxel azul en el canto derecho. Al repetirse, el contorno de cada tile marca juntas muy visibles y se nota el patrón repetido."
+    }
+  }
+}

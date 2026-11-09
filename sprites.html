@@ -112,6 +112,59 @@
       .aprobado {
         color: #9aa35a;
       }
+      #indice {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 18px;
+        margin-bottom: 28px;
+        padding: 10px 14px;
+        background: var(--panel);
+        border: 2px solid var(--tinta);
+      }
+      #indice a {
+        color: var(--texto);
+      }
+      h1[id^='sec-'] {
+        margin-top: 28px;
+      }
+      .vacio {
+        color: var(--suave);
+        font-style: italic;
+      }
+      img,
+      canvas {
+        image-rendering: pixelated;
+      }
+      .colores-fuera {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 2px;
+        margin: 4px 0 8px;
+        max-width: 320px;
+      }
+      .color-fuera {
+        width: 12px;
+        height: 12px;
+        border: 1px solid var(--tinta);
+      }
+      #pendientes,
+      #aprobados,
+      #hojas {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 20px;
+        align-items: flex-start;
+        margin-bottom: 24px;
+      }
+      .pendiente-nota {
+        color: var(--suave);
+        font-size: 13px;
+        max-width: 640px;
+        margin: 0 0 10px;
+      }
+      .fuera {
+        color: #c8553d;
+      }
       .error {
         color: #c8553d;
         white-space: pre-wrap;
@@ -134,8 +187,38 @@
       <label><input id="rejilla" type="checkbox" checked /> Rejilla</label>
     </div>
     <div id="paleta"></div>
+    <nav id="indice">
+      <a href="#sec-texto">Sprites de texto</a>
+      <a href="#sec-pendientes">Pendientes de revisión</a>
+      <a href="#sec-aprobados">Aprobados</a>
+      <a href="#sec-hojas">Hojas</a>
+      <a href="#sec-mapas">Mapas</a>
+    </nav>
+    <h1 id="sec-texto">Sprites de texto</h1>
+    <p>
+      <code>arte/sprites/*.json</code>, hechos con <code>/sprite</code>. Cada uno también a ×4 y
+      sobre un suelo isométrico de prueba de 3×3 rombos.
+    </p>
     <main id="sprites"></main>
-    <h1>Mapas</h1>
+    <h1 id="sec-pendientes">Pendientes de revisión</h1>
+    <p>
+      Generados con PixelLab en <code>arte/pixellab/pendientes/</code>. Cada variante a ×1 y ×4, y
+      sobre el suelo de prueba, con su prompt y los colores que se salen de la paleta.
+    </p>
+    <section id="pendientes"></section>
+    <h1 id="sec-aprobados">Aprobados</h1>
+    <p>
+      <code>arte/pixellab/aprobados/</code>. Con <code>npm run paleta -- &lt;png&gt;</code> se crea
+      <code>&lt;asset&gt;.paleta.png</code> y aquí se ve el antes y el después.
+    </p>
+    <section id="aprobados"></section>
+    <h1 id="sec-hojas">Hojas</h1>
+    <p>
+      <code>arte/hojas/*.png</code> con su <code>.json</code>: cada celda numerada a ×4 sobre
+      cuadros.
+    </p>
+    <section id="hojas"></section>
+    <h1 id="sec-mapas">Mapas</h1>
     <p>
       Así se ven los mapas de <code>public/assets/maps/</code> con sus casillas. Recarga tras
       editarlos en Tiled.

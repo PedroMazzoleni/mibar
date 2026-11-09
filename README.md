@@ -2,9 +2,9 @@
 
 > Nombre provisional.
 
-Simulador 2D en vista 3/4 en el que acabas de abrir un **bar clásico español** y tienes que sacarlo adelante día a día. Todo se juega con el ratón: tomas nota, preparas cañas y cafés, sirves tapas, cobras y vas mejorando el local.
+Simulador 2D en vista isometrica en el que acabas de abrir un **bar clásico español** y tienes que sacarlo adelante día a día. Todo se juega con el ratón: tomas nota, preparas cañas y cafés, sirves tapas, cobras y vas mejorando el local.
 
-La estética mezcla **cubismo y pixel art**, inspirada en los bodegones de Picasso y Juan Gris: el local se ve en vista 3/4, como en los RPG clásicos (suelo desde arriba, paredes y muebles de frente), y botellas, vasos y personas aparecen fragmentados y desde varios puntos de vista a la vez.
+La estética mezcla **cubismo y pixel art**, inspirada en los bodegones de Picasso y Juan Gris: el local se ve en vista isometrica, como en los RPG clásicos (suelo desde arriba, paredes y muebles de frente), y botellas, vasos y personas aparecen fragmentados y desde varios puntos de vista a la vez.
 
 **Estado:** en desarrollo, Fase 0 (preparación del proyecto).
 

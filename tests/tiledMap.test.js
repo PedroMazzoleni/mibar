@@ -3,9 +3,10 @@ import {
   readProperties,
   findLayer,
   tileAt,
+  objectToGrid,
   readFurniture,
   readZones,
-  gidsWithProperty,
+  gidProperty,
 } from '../src/logic/tiledMap.js';
 import { miniMap } from './fixtures/miniMap.js';
 
@@ -24,21 +25,27 @@ describe('findLayer y tileAt', () => {
   });
   it('lee el gid de una casilla y 0 fuera de la capa', () => {
     const walls = findLayer(miniMap, 'paredes');
-    expect(tileAt(walls, 1, 0)).toBe(3);
-    expect(tileAt(walls, 1, 1)).toBe(0);
+    expect(tileAt(walls, 1, 1)).toBe(3);
+    expect(tileAt(walls, 0, 0)).toBe(0);
     expect(tileAt(walls, -1, 0)).toBe(0);
     expect(tileAt(walls, 4, 0)).toBe(0);
     expect(tileAt(null, 0, 0)).toBe(0);
   });
 });
 
+describe('objectToGrid', () => {
+  it('divide entre tileheight en los dos ejes', () =>
+    expect(objectToGrid(miniMap, 24, 40)).toEqual({ gc: 1.5, gr: 2.5 }));
+});
+
 describe('readFurniture', () => {
   const [mesa, tragaperras] = readFurniture(miniMap);
-  it('frame relativo al tileset y casilla desde la esquina inferior izquierda', () => {
-    expect(mesa).toMatchObject({ id: 1, type: 'mesa', frame: 8, col: 2, row: 1, x: 64, y: 64 });
+  it('frame relativo al tileset y casilla desde la esquina inferior del rombo', () => {
+    expect(mesa).toMatchObject({ id: 1, type: 'mesa', frame: 8, col: 0, row: 2 });
     expect(mesa.tileset).toBe('bar-tiles');
+    expect(tragaperras).toMatchObject({ col: 1, row: 2 });
   });
-  it('ocupa por defecto; ocupa:false en las mitades de arriba', () => {
+  it('ocupa por defecto; ocupa:false cuando el mapa lo dice', () => {
     expect(mesa.occupies).toBe(true);
     expect(tragaperras.occupies).toBe(false);
   });
@@ -47,12 +54,17 @@ describe('readFurniture', () => {
 
 describe('readZones', () => {
   const { zones, points } = readZones(miniMap);
-  it('zonas en casillas', () =>
-    expect(zones[0]).toEqual({ name: 'baño', col: 0, row: 1, cols: 2, rows: 1 }));
-  it('puntos aparte', () => expect(points.entrada).toEqual({ x: 48, y: 80 }));
+  it('zonas en casillas', () => {
+    expect(zones[0]).toEqual({ name: 'baño', col: 0, row: 0, cols: 3, rows: 1 });
+    expect(zones[3]).toEqual({ name: 'cocina', col: 3, row: 1, cols: 1, rows: 2 });
+  });
+  it('puntos como punto de rejilla', () => expect(points.entrada).toEqual({ gc: 1.5, gr: 2.5 }));
 });
 
-describe('gidsWithProperty', () => {
-  it('devuelve los gid de las casillas de puerta', () =>
-    expect([...gidsWithProperty(miniMap, 'puerta')]).toEqual([3]));
+describe('gidProperty', () => {
+  it('devuelve el valor de la propiedad por gid', () =>
+    expect([...gidProperty(miniMap, 'puerta')]).toEqual([
+      [3, 'norte'],
+      [4, 'oeste'],
+    ]));
 });

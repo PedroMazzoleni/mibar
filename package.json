@@ -10,7 +10,8 @@
     "test": "vitest",
     "lint": "eslint .",
     "format": "prettier --write .",
-    "sprites": "node tools/exportar-sprites.js"
+    "sprites": "node tools/exportar-sprites.js",
+    "paleta": "node tools/ajustar-paleta.js"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",

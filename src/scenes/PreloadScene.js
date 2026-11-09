@@ -1,5 +1,5 @@
 import Phaser from 'phaser';
-import { TILE_SIZE } from '../logic/grid.js';
+import { FRAME_W, FRAME_H } from '../logic/iso.js';
 
 const BAR_WIDTH = 320;
 const BAR_HEIGHT = 24;
@@ -33,14 +33,14 @@ export default class PreloadScene extends Phaser.Scene {
       bar.fillRect(x, y, Math.round(BAR_WIDTH * value), BAR_HEIGHT);
     });
 
-    // Mapa del bar y su tileset (también como spritesheet para los muebles).
+    // Mapa isométrico del bar (JSON de Tiled) y su tileset de frames de 32×48.
     // BASE_URL: '/' en desarrollo y '/mibar/' en el build de GitHub Pages
     this.load.setPath(import.meta.env.BASE_URL);
     this.load.json('furniture-names', 'assets/data/furniture-names.json');
-    this.load.tilemapTiledJSON('bar', 'assets/maps/bar.tmj');
+    this.load.json('bar-map', 'assets/maps/bar.tmj');
     this.load.spritesheet('bar-tiles', 'assets/sprites/bar-tiles.png', {
-      frameWidth: TILE_SIZE,
-      frameHeight: TILE_SIZE,
+      frameWidth: FRAME_W,
+      frameHeight: FRAME_H,
     });
   }
 
