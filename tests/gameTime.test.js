@@ -36,21 +36,23 @@ describe('gameTime', () => {
 });
 
 describe('velocidad', () => {
-  it('por defecto x1 y SPEEDS válidas', async () => {
+  it('por defecto x5 y SPEEDS válidas', async () => {
     const { SPEEDS, setSpeed, simDelta } = await import('../src/logic/gameTime.js');
     const t = createGameTime();
-    expect(t.speed).toBe(1);
-    expect(SPEEDS).toEqual([1, 2, 3, 5]);
-    expect(setSpeed(t, 5).speed).toBe(5);
-    expect(setSpeed(t, 4)).toBe(t);
+    expect(t.speed).toBe(5);
+    expect(SPEEDS).toEqual([5, 10, 50, 100]);
+    expect(setSpeed(t, 100).speed).toBe(100);
+    expect(setSpeed(t, 1)).toBe(t);
     expect(setSpeed(t, 'x')).toBe(t);
-    expect(simDelta(setSpeed(t, 3), 100)).toBe(300);
+    expect(simDelta(setSpeed(t, 10), 100)).toBe(1000);
   });
-  it('x5 avanza 1 minuto cada 3 s reales y conserva la velocidad', async () => {
+  it('x5 avanza 1 minuto cada 3 s reales y x100 cada 150 ms', async () => {
     const { setSpeed, simDelta } = await import('../src/logic/gameTime.js');
-    const t = setSpeed(createGameTime(), 5);
+    const t = createGameTime();
     const n = advanceGameTime(t, simDelta(t, 3000));
     expect(formatTime(n)).toBe('09:01');
     expect(n.speed).toBe(5);
+    const f = setSpeed(t, 100);
+    expect(formatTime(advanceGameTime(f, simDelta(f, 150)))).toBe('09:01');
   });
 });

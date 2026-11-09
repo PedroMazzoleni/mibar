@@ -1,4 +1,4 @@
-import { SPEEDS } from '../logic/gameTime.js';
+import { SPEEDS, DEFAULT_SPEED } from '../logic/gameTime.js';
 import { getStatusLabel, layoutTopBar } from '../logic/barStatus.js';
 
 // Colores de arte/paleta.json
@@ -14,7 +14,7 @@ const BLINK_MS = 500;
 const LED_SIZE = 3;
 const LED_GAP = 6;
 const ROW_H = 18;
-const MENU_W = 40;
+const MENU_W = 52;
 
 // Barra superior fija en pantalla con el estado ABIERTO/CERRADO en el centro
 export default class TopBar {
@@ -35,7 +35,7 @@ export default class TopBar {
       .setScrollFactor(0)
       .setDepth(2001);
     this.timeLabel = '';
-    this.speed = 1;
+    this.speed = DEFAULT_SPEED;
     this.menuOpen = false;
     // Menú de velocidad (pixel art gris, oculto hasta pulsar la hora)
     this.menuGfx = scene.add.graphics().setScrollFactor(0).setDepth(2002).setVisible(false);
@@ -67,8 +67,8 @@ export default class TopBar {
     this.drawLed();
   }
 
-  setTime(label, speed = 1) {
-    const full = speed === 1 ? label : `${label} x${speed}`;
+  setTime(label, speed = DEFAULT_SPEED) {
+    const full = `${label} x${speed}`;
     if (full === this.timeLabel && speed === this.speed) return;
     this.timeLabel = full;
     this.speed = speed;

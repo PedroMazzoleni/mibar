@@ -3,14 +3,15 @@
 // 1 minuto de juego cada 15 s reales
 export const MS_PER_GAME_MINUTE = 15000;
 // Velocidades de simulación disponibles (multiplican el dt de todo)
-export const SPEEDS = [1, 2, 3, 5];
+export const SPEEDS = [5, 10, 50, 100];
+export const DEFAULT_SPEED = SPEEDS[0];
 const DAY_MINUTES = 24 * 60;
 
 export function createGameTime(startMinutes = 9 * 60) {
   return {
     minutes: ((startMinutes % DAY_MINUTES) + DAY_MINUTES) % DAY_MINUTES,
     restMs: 0,
-    speed: 1,
+    speed: DEFAULT_SPEED,
   };
 }
 
