@@ -1,7 +1,8 @@
 // Estado del bar (abierto/cerrado) y maquetación de la barra superior. Lógica pura, sin Phaser.
 
-const BAR_HEIGHT = 16;
-const CENTER_WIDTH = 96;
+const BAR_HEIGHT = 20;
+const PLATE_HEIGHT = 24;
+const CENTER_WIDTH = 120;
 
 // Estado inicial: por defecto el bar empieza cerrado
 export function createBarStatus(open = false) {
@@ -17,8 +18,15 @@ export function getStatusLabel(status) {
   return status.open ? 'ABIERTO' : 'CERRADO';
 }
 
-// Barra a todo el ancho y tramo central centrado (nunca más ancho que la barra)
+// Barra a todo el ancho y placa central centrada (nunca más ancha que la barra)
 export function layoutTopBar(width) {
   const centerW = Math.min(CENTER_WIDTH, width);
-  return { barHeight: BAR_HEIGHT, centerX: (width - centerW) / 2, centerW };
+  return {
+    barHeight: BAR_HEIGHT,
+    plateHeight: PLATE_HEIGHT,
+    // Altura real ocupada por la barra (la mayor de barra y placa)
+    totalHeight: Math.max(BAR_HEIGHT, PLATE_HEIGHT),
+    centerX: (width - centerW) / 2,
+    centerW,
+  };
 }

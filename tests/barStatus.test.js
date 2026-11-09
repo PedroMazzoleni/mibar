@@ -46,8 +46,14 @@ describe('layoutTopBar', () => {
         expect(layout.centerX).toBeGreaterThanOrEqual(0);
         expect(layout.centerX + layout.centerW).toBeLessThanOrEqual(width);
       });
-      it('la barra tiene alto de 16 px', () => {
-        expect(layout.barHeight).toBe(16);
+      it('la barra tiene alto de 20 px', () => {
+        expect(layout.barHeight).toBe(20);
+      });
+      it('la placa central no es más baja que la barra', () => {
+        expect(layout.plateHeight).toBeGreaterThanOrEqual(layout.barHeight);
+      });
+      it('totalHeight es el máximo de barra y placa', () => {
+        expect(layout.totalHeight).toBe(Math.max(layout.barHeight, layout.plateHeight));
       });
     });
   }

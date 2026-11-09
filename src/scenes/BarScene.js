@@ -206,7 +206,7 @@ export default class BarScene extends Phaser.Scene {
 
   // El puntero está sobre la barra superior (la dibuja HudScene)
   isOverTopBar(pointer) {
-    return pointer.y < layoutTopBar(this.scale.width).barHeight;
+    return pointer.y < layoutTopBar(this.scale.width).totalHeight;
   }
 
   update() {

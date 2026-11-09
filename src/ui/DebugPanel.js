@@ -1,4 +1,8 @@
 import { formatDebugText } from '../logic/debugInfo.js';
+import { layoutTopBar } from '../logic/barStatus.js';
+
+// Margen entre la barra superior y el panel
+const MARGIN_BELOW_BAR = 4;
 
 // Tecla que muestra/oculta el panel
 const TOGGLE_KEY = 'F3';
@@ -19,7 +23,10 @@ export default class DebugPanel {
       lineSpacing: 2,
     });
     this.container = scene.add
-      .container(4, 20, [this.bg, this.text])
+      .container(4, layoutTopBar(scene.scale.width).totalHeight + MARGIN_BELOW_BAR, [
+        this.bg,
+        this.text,
+      ])
       .setScrollFactor(0)
       .setDepth(1000)
       .setVisible(visible);
