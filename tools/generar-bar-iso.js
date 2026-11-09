@@ -402,7 +402,8 @@ const vitrina = () => {
             ch = t > 0.85 || v > VF - 0.03 ? 'e' : 'f';
             break;
           }
-          const ang = v <= VC ? Math.PI / 2 : Math.atan2((z - ZB) / (ZT - ZB), (v - VC) / (VF - VC));
+          const ang =
+            v <= VC ? Math.PI / 2 : Math.atan2((z - ZB) / (ZT - ZB), (v - VC) / (VF - VC));
           cristal = { ang };
           continue;
         }
@@ -793,8 +794,8 @@ function freidora() {
       if (t < 0.08) return 'g';
       if (t > 0.9) return 'd';
       if (cerca(t, 0.22, 0.07) && (cerca(s, 0.25, 0.05) || cerca(s, 0.75, 0.05))) return '0';
-      if (cerca(t, 0.22, 0.07) && cerca(s, 0.5, 0.03)) return 'r';
-      if (t > 0.4 && cerca(s, 0.5, 0.025)) return 'd';
+      if (cerca(t, 0.22, 0.07) && cerca(s, 0.5, 0.045)) return 'r';
+      if (t > 0.4 && cerca(s, 0.5, 0.04)) return 'd';
       if (cerca(t, 0.45, 0.04) && (cerca(s, 0.4, 0.06) || cerca(s, 0.6, 0.06))) return 'g';
       return 'e';
     },
@@ -824,11 +825,11 @@ function freidora() {
     });
     // asa de la cesta asomando por delante
     bloque(c, {
-      u: [(a + b) / 2 - 0.04, (a + b) / 2 + 0.04],
-      v: [0.66, 0.86],
-      z: [18, 21],
-      arriba: () => '0',
-      sur: () => 'd',
+      u: [(a + b) / 2 - 0.03, (a + b) / 2 + 0.03],
+      v: [0.68, 0.84],
+      z: [18, 20],
+      arriba: () => 'd',
+      sur: () => '0',
       este: () => '0',
       bordes: false,
     });

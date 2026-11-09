@@ -1,3 +1,4 @@
+import { SPEEDS } from '../logic/gameTime.js';
 import { getStatusLabel, layoutTopBar } from '../logic/barStatus.js';
 
 // Colores de arte/paleta.json
@@ -12,6 +13,8 @@ const GREEN = 0x3e8e7e; // W
 const BLINK_MS = 500;
 const LED_SIZE = 3;
 const LED_GAP = 6;
+const ROW_H = 18;
+const MENU_W = 40;
 
 // Barra superior fija en pantalla con el estado ABIERTO/CERRADO en el centro
 export default class TopBar {
@@ -25,6 +28,25 @@ export default class TopBar {
       .setOrigin(0, 0.5)
       .setScrollFactor(0)
       .setDepth(2001);
+    // Hora ficticia a la derecha de la placa central (provisional hasta 5.1)
+    this.timeText = scene.add
+      .text(0, 0, '', { fontSize: '16px', color: '#b3c0c6' })
+      .setOrigin(0, 0.5)
+      .setScrollFactor(0)
+      .setDepth(2001);
+    this.timeLabel = '';
+    this.speed = 1;
+    this.menuOpen = false;
+    // Menú de velocidad (pixel art gris, oculto hasta pulsar la hora)
+    this.menuGfx = scene.add.graphics().setScrollFactor(0).setDepth(2002).setVisible(false);
+    this.menuTexts = SPEEDS.map((v) =>
+      scene.add
+        .text(0, 0, `x${v}`, { fontSize: '16px', color: '#b3c0c6' })
+        .setOrigin(0, 0.5)
+        .setScrollFactor(0)
+        .setDepth(2003)
+        .setVisible(false),
+    );
     this.status = status;
     this.ledVisible = true;
     // Parpadeo suave del LED para indicar que el valor es variable
@@ -43,6 +65,59 @@ export default class TopBar {
     this.status = { open };
     this.refreshText();
     this.drawLed();
+  }
+
+  setTime(label, speed = 1) {
+    const full = speed === 1 ? label : `${label} x${speed}`;
+    if (full === this.timeLabel && speed === this.speed) return;
+    this.timeLabel = full;
+    this.speed = speed;
+    this.timeText.setText(full);
+    if (this.menuOpen) this.drawMenu();
+  }
+
+  // Rectángulo de la hora (con margen) para el clic
+  hitClock(x, y) {
+    const t = this.timeText;
+    return x >= t.x - 2 && x <= t.x + t.width + 2 && y >= 0 && y < this.barH;
+  }
+
+  // Velocidad de la opción bajo el puntero, o null (solo con el menú abierto)
+  hitMenu(x, y) {
+    if (!this.menuOpen) return null;
+    const mx = this.timeText.x;
+    if (x < mx || x > mx + MENU_W) return null;
+    const i = Math.floor((y - this.barH - 2) / ROW_H);
+    return i >= 0 && i < SPEEDS.length ? SPEEDS[i] : null;
+  }
+
+  openMenu() {
+    this.menuOpen = true;
+    this.drawMenu();
+  }
+
+  closeMenu() {
+    this.menuOpen = false;
+    this.menuGfx.clear().setVisible(false);
+    this.menuTexts.forEach((t) => t.setVisible(false));
+  }
+
+  drawMenu() {
+    const g = this.menuGfx.clear().setVisible(true);
+    const x = this.timeText.x;
+    const y = this.barH;
+    const h = SPEEDS.length * ROW_H + 4;
+    g.fillStyle(INK, 1).fillRect(x, y, MENU_W, h);
+    g.fillStyle(DARK, 1).fillRect(x + 1, y, MENU_W - 2, h - 1);
+    g.fillStyle(MID, 1).fillRect(x + 1, y, MENU_W - 2, 1);
+    g.fillStyle(INK, 1).fillRect(x + 1, y + h - 2, MENU_W - 2, 1);
+    SPEEDS.forEach((v, i) => {
+      const ry = y + 2 + i * ROW_H;
+      if (v === this.speed) g.fillStyle(BAR_COLOR, 1).fillRect(x + 2, ry, MENU_W - 4, ROW_H);
+      const t = this.menuTexts[i];
+      t.setPosition(x + 6, ry + ROW_H / 2).setVisible(true);
+      t.setColor(v === this.speed ? '#3e8e7e' : '#b3c0c6');
+    });
   }
 
   refreshText() {
@@ -69,6 +144,7 @@ export default class TopBar {
   resize(width) {
     const { barHeight, plateHeight, centerX, centerW } = layoutTopBar(width);
     this.width = width;
+    this.barH = barHeight;
     this.plateH = plateHeight;
     const g = this.gfx;
     g.clear();
@@ -88,5 +164,7 @@ export default class TopBar {
     g.fillStyle(INK, 1).fillRect(x + 1, plateHeight - 2, centerW - 2, 1);
     this.refreshText();
     this.drawLed();
+    this.timeText.setPosition(Math.round(centerX + centerW + 8), Math.round(barHeight / 2));
+    if (this.menuOpen) this.drawMenu();
   }
 }

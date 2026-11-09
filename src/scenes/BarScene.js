@@ -218,11 +218,15 @@ export default class BarScene extends Phaser.Scene {
 
   // El puntero está sobre la barra superior (la dibuja HudScene)
   isOverTopBar(pointer) {
-    return pointer.y < layoutTopBar(this.scale.width).totalHeight;
+    return (
+      pointer.y < layoutTopBar(this.scale.width).totalHeight ||
+      Boolean(this.scene.get('Hud').blocksPointer?.(pointer))
+    );
   }
 
-  update(_time, delta) {
-    this.customerSystem.update(delta);
+  update() {
+    const hud = this.scene.get('Hud');
+    this.customerSystem.update(hud.simDt ?? 0, hud.status, hud.hour);
     this.debug.setCustomers(this.customerSystem.debugText());
     this.debug.update();
     this.updateMoverDepth();

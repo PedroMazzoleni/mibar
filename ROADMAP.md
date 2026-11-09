@@ -44,11 +44,10 @@ Marca con [x] solo cuando la tarea pase tests, lint y build. Una tarea cada vez,
 - [x] 3.01 Una barra arriba que inidique cuando esta cerrado y abierto y que ocupe como todo el div de arriba como si fuera una cabezera pero con el centro mas desstracado
 - [x] 3.1 Pathfinding con EasyStar sobre la rejilla
 - [x] 3.2 Máquina de estados del cliente (entra → sitio → pedir → esperar → consumir → pagar → salir)
-- [ ] 3.3 Paciencia y bocadillo de estado
-- [ ] 3.4 Spawner según hora y reputación
+- [x] 3.4 Spawner según hora (sin reputación)
 - [ ] 3.5 Tipos de cliente en customers.json
 - [ ] 3.6 Tests de la máquina de estados
-      **Hecho cuando:** los clientes entran, se sientan, esperan y se van si nadie les atiende.
+      **Hecho cuando:** los clientes entran solos según la hora, se sientan, piden, consumen, pagan y se van.
 
 ## Fase 4 — Interacción y servicio
 
@@ -68,7 +67,8 @@ Marca con [x] solo cuando la tarea pase tests, lint y build. Una tarea cada vez,
 - [ ] 5.4 MarketScene para comprar género
 - [ ] 5.5 Precios editables y efecto en la demanda
 - [ ] 5.6 Gastos fijos y DaySummaryScene
-- [ ] 5.7 Reputación
+- [ ] 5.7 Reputación (y su efecto en el spawner de clientes)
+- [ ] 5.7b Paciencia y bocadillo de estado (pospuesta desde 3.3)
 - [ ] 5.8 Tests de la economía
       **Hecho cuando:** se juegan varios días y se puede ganar o perder dinero.
 
@@ -131,3 +131,4 @@ Marca con [x] solo cuando la tarea pase tests, lint y build. Una tarea cada vez,
 - 2026-11-09 · 2.7b · Barra superior en estilo pixel art (contorno, brillo, sombra y placa central en relieve), estado en rojo/verde con LED parpadeante y más margen; DebugPanel bajo la altura total de la barra
 - 2026-11-09 · 3.1 · src/logic/pathfinding.js: findPath con EasyStar síncrono sobre navGrid (respeta tabiques y puertas, solo ortogonal) con tests
 - 2026-11-09 · 3.2 · Máquina de estados del cliente: src/logic/customerFsm.js (estados, pickSeat con casilla de acceso, advance, tick, canEnter), src/systems/customerSystem.js, src/objects/CustomerSprite.js; F6 crea un cliente solo con el bar abierto; clic = pedido tomado / servido; DebugPanel muestra el estado
+- 2026-11-09 · 3.4 · Spawner por franjas horarias provisionales (src/logic/spawner.js: hourSlot, spawnIntervalMs, advanceSpawner; solo con bar abierto y sitio libre, máx. 12 clientes); hora ficticia en la barra superior (src/logic/gameTime.js, 1 min de juego cada 15 s) con menú de velocidad x1/x2/x3/x5 al pulsar la hora; F7 adelanta 1 hora en dev; paciencia pospuesta a 5.7b y reputación a 5.7

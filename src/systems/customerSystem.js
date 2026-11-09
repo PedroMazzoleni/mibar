@@ -10,6 +10,7 @@ import {
   canEnter,
 } from '../logic/customerFsm.js';
 import { findPath } from '../logic/pathfinding.js';
+import { createSpawner, advanceSpawner } from '../logic/spawner.js';
 import CustomerSprite from '../objects/CustomerSprite.js';
 
 // Velocidad de paseo en píxeles por segundo
@@ -25,6 +26,7 @@ export default class CustomerSystem {
     this.entrance = spawnTile(this.nav, readZones(mapData).points.entrada ?? { gc: 0, gr: 0 });
     this.customers = [];
     this.nextId = 1;
+    this.spawner = createSpawner(Math.random);
   }
 
   center(cell) {
@@ -71,7 +73,22 @@ export default class CustomerSystem {
     c.data = { ...c.data, route: seat ? [seat.stand, ...path.slice(1)] : path.slice(1) };
   }
 
-  update(dtMs) {
+  // Asientos sin cliente asignado (también cuenta a los que van de camino)
+  freeSeats() {
+    return this.seats.length - this.customers.filter((c) => c.data.seat).length;
+  }
+
+  update(dtMs, barStatus, hour) {
+    if (this.entrance) {
+      const r = advanceSpawner(
+        this.spawner,
+        dtMs,
+        { barStatus, hour, customerCount: this.customers.length, freeSeats: this.freeSeats() },
+        Math.random,
+      );
+      this.spawner = r.state;
+      if (r.spawn) this.spawnCustomer(barStatus);
+    }
     for (const c of this.customers) {
       const before = c.data.state;
       c.data = tick(c.data, dtMs);

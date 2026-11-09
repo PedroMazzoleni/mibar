@@ -8,6 +8,7 @@ export const INTERACTIVE_TYPES = [
   'cafetera',
   'plancha',
   'caja',
+  'freidora',
 ];
 
 export function isInteractive(type) {

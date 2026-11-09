@@ -19,8 +19,8 @@ describe('getFurnitureLabel', () => {
     expect(getFurnitureLabel('mesa', undefined)).toBe('Mesa');
   });
 
-  it('los 8 tipos interactivos tienen nombre', () => {
-    expect(INTERACTIVE_TYPES).toHaveLength(8);
+  it('los 9 tipos interactivos tienen nombre', () => {
+    expect(INTERACTIVE_TYPES).toHaveLength(9);
     for (const type of INTERACTIVE_TYPES) {
       expect(typeof names[type]).toBe('string');
       expect(names[type].length).toBeGreaterThan(0);
