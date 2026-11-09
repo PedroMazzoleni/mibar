@@ -41,9 +41,9 @@ Marca con [x] solo cuando la tarea pase tests, lint y build. Una tarea cada vez,
       **Hecho cuando:** el bar se carga desde un mapa isométrico de Tiled y cada mueble muestra su nombre.
 
 ## Fase 3 — Clientes
-- [ ] 3.01 Una barra arriba que inidique cuando esta cerrado y abierto y que ocupe como todo el div de arriba como si fuera una cabezera pero con el centro mas desstracado
-- [ ] 3.1 Pathfinding con EasyStar sobre la rejilla
-- [ ] 3.2 Máquina de estados del cliente (entra → sitio → pedir → esperar → consumir → pagar → salir)
+- [x] 3.01 Una barra arriba que inidique cuando esta cerrado y abierto y que ocupe como todo el div de arriba como si fuera una cabezera pero con el centro mas desstracado
+- [x] 3.1 Pathfinding con EasyStar sobre la rejilla
+- [x] 3.2 Máquina de estados del cliente (entra → sitio → pedir → esperar → consumir → pagar → salir)
 - [ ] 3.3 Paciencia y bocadillo de estado
 - [ ] 3.4 Spawner según hora y reputación
 - [ ] 3.5 Tipos de cliente en customers.json
@@ -129,3 +129,5 @@ Marca con [x] solo cuando la tarea pase tests, lint y build. Una tarea cada vez,
 - 2026-11-09 · 2.6 · Profundidad de lo que se mueve: src/logic/iso.js (screenToGridF, depthOfPoint, moverDepthSub: casilla entera con subnivel 3–3.9, entre mueble y zócalo); src/objects/Mover.js; BarScene recalcula la profundidad cada frame; marcador de prueba con F5 en dev
 - 2026-11-09 · 2.7 · Barra superior gris a todo el ancho con centro destacado y estado ABIERTO/CERRADO: src/logic/barStatus.js (createBarStatus, toggleOpen, getStatusLabel, layoutTopBar), src/ui/TopBar.js, src/scenes/HudScene.js; tecla 1 alterna el estado; ratón sobre la barra no llega al bar; DebugPanel bajo la barra
 - 2026-11-09 · 2.7b · Barra superior en estilo pixel art (contorno, brillo, sombra y placa central en relieve), estado en rojo/verde con LED parpadeante y más margen; DebugPanel bajo la altura total de la barra
+- 2026-11-09 · 3.1 · src/logic/pathfinding.js: findPath con EasyStar síncrono sobre navGrid (respeta tabiques y puertas, solo ortogonal) con tests
+- 2026-11-09 · 3.2 · Máquina de estados del cliente: src/logic/customerFsm.js (estados, pickSeat con casilla de acceso, advance, tick, canEnter), src/systems/customerSystem.js, src/objects/CustomerSprite.js; F6 crea un cliente solo con el bar abierto; clic = pedido tomado / servido; DebugPanel muestra el estado

@@ -746,6 +746,104 @@ for (let r = 0; r < ROWS; r++)
     }
   }
 
+// ---------- cocina de acero inoxidable (tapa g, cara izquierda f/e, cara derecha e/d)
+// Van al final del tileset para no mover los gid de suelos y paredes.
+// Mesa isla de varias casillas: patas solo en los extremos y balda abajo, para que se vea el suelo
+function mesaInox({ primera = false, ultima = false }) {
+  const c = lienzo();
+  const u = [primera ? 0.1 : 0, ultima ? 0.9 : 1];
+  const v = [0.15, 0.85];
+  const patasU = [primera && u[0] + 0.02, ultima && u[1] - 0.1].filter((x) => x !== false);
+  const pata = (pu, pv) =>
+    bloque(c, {
+      u: [pu, pu + 0.08],
+      v: [pv, pv + 0.08],
+      z: [0, 13],
+      arriba: () => 'f',
+      sur: () => 'f',
+      este: () => 'd',
+      bordes: false,
+    });
+  for (const pu of patasU) pata(pu, v[0] + 0.02);
+  // balda de abajo
+  const vb = [v[0] + 0.04, v[1] - 0.04];
+  cara_sur(c, vb[1], u, [3, 5], (s, t) => (t < 0.5 ? 'e' : 'd'));
+  if (ultima) cara_este(c, u[1] - 0.02, vb, [3, 5], () => 'd');
+  cara_arriba(c, 5, [u[0], u[1] - (ultima ? 0.02 : 0), ...vb], (s, t) => (t < 0.2 ? 'd' : 'e'));
+  for (const pu of patasU) pata(pu, v[1] - 0.1);
+  // tapa con canto de 3 px y vetas de acero cepillado a lo largo de la isla
+  cara_sur(c, v[1], u, [13, 16], (s, t) => (t < 0.34 ? 'g' : t < 0.67 ? 'f' : 'd'));
+  if (ultima) cara_este(c, u[1], v, [13, 16], (s, t) => (t < 0.34 ? 'f' : t < 0.67 ? 'e' : '0'));
+  cara_arriba(c, 16, [u[0], u[1], v[0], v[1]], (s, t, X, Y) => {
+    if (t < 0.1 || (primera && s < 0.08)) return '9';
+    if (t > 0.9) return 'f';
+    return (((X - 2 * Y) % 10) + 10) % 10 === 0 && t > 0.25 && t < 0.75 ? '9' : 'g';
+  });
+  return c;
+}
+
+// Mueble de acero con dos cubas de aceite y su cesta; mandos y piloto rojo en el frente
+function freidora() {
+  const c = lienzo();
+  const cerca = (a, b, r) => Math.abs(a - b) < r;
+  bloque(c, {
+    z: [0, 18],
+    arriba: () => 'g',
+    sur: (s, t) => {
+      if (t < 0.08) return 'g';
+      if (t > 0.9) return 'd';
+      if (cerca(t, 0.22, 0.07) && (cerca(s, 0.25, 0.05) || cerca(s, 0.75, 0.05))) return '0';
+      if (cerca(t, 0.22, 0.07) && cerca(s, 0.5, 0.03)) return 'r';
+      if (t > 0.4 && cerca(s, 0.5, 0.025)) return 'd';
+      if (cerca(t, 0.45, 0.04) && (cerca(s, 0.4, 0.06) || cerca(s, 0.6, 0.06))) return 'g';
+      return 'e';
+    },
+    este: (s, t) => (t < 0.08 ? 'e' : 'd'),
+    bordes: false,
+  });
+  cara_sur(c, 1, [0, 1], [0, 1], () => '0');
+  cara_este(c, 1, [0, 1], [0, 1], () => '0');
+  // respaldo bajo contra la pared
+  bloque(c, {
+    v: [0, 0.1],
+    z: [18, 23],
+    arriba: () => '9',
+    sur: () => 'f',
+    este: () => 'e',
+    bordes: false,
+  });
+  for (const [a, b] of [
+    [0.08, 0.46],
+    [0.54, 0.92],
+  ]) {
+    // cuba: borde en sombra arriba-izquierda, aceite dorado con un brillo
+    cara_arriba(c, 18, [a, b, 0.18, 0.78], (s, t) => {
+      if (s < 0.14 || t < 0.14) return 'd';
+      if (s > 0.9 || t > 0.9) return 'f';
+      return s + t < 0.75 ? 'C' : 'G';
+    });
+    // asa de la cesta asomando por delante
+    bloque(c, {
+      u: [(a + b) / 2 - 0.04, (a + b) / 2 + 0.04],
+      v: [0.66, 0.86],
+      z: [18, 21],
+      arriba: () => '0',
+      sur: () => 'd',
+      este: () => '0',
+      bordes: false,
+    });
+  }
+  return c;
+}
+
+const COCINA = {
+  'mesa inox (izquierda)': frame('mesa de acero (izquierda)', mesaInox({ primera: true })),
+  'mesa inox (centro)': frame('mesa de acero (centro)', mesaInox({})),
+  'mesa inox (derecha)': frame('mesa de acero (derecha)', mesaInox({ ultima: true })),
+  freidora: frame('freidora doble', freidora()),
+};
+Object.assign(MUEBLES, COCINA);
+
 // ---------- muebles en el mapa: [etiqueta, tipo, col, fila]
 const M = [];
 const mueble = (etiqueta, tipo, c, r, props) => M.push([etiqueta, tipo, c, r, props]);
@@ -753,8 +851,14 @@ const mueble = (etiqueta, tipo, c, r, props) => M.push([etiqueta, tipo, c, r, pr
 mueble('vater', 'vater', 0, 4);
 mueble('lavabo', 'lavabo', 4, 3);
 // cocina
-for (let c = 5; c <= 11; c++)
-  mueble(c === 7 ? 'plancha' : 'encimera', c === 7 ? 'plancha' : 'encimera', c, 0);
+for (let c = 5; c <= 11; c++) {
+  const tipo = { 7: 'plancha', 9: 'freidora' }[c] ?? 'encimera';
+  mueble(tipo, tipo, c, 0);
+}
+// isla de acero en medio de la cocina, con suelo libre alrededor
+mueble('mesa inox (izquierda)', 'mesa-cocina', 7, 2);
+mueble('mesa inox (centro)', 'mesa-cocina', 8, 2);
+mueble('mesa inox (derecha)', 'mesa-cocina', 9, 2);
 // detrás de la barra: cafetera en su mueble contra la pared
 mueble('cafetera (izq.)', 'cafetera', 3, 6);
 mueble('cafetera (der.)', 'cafetera', 4, 6);

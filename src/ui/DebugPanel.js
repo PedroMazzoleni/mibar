@@ -15,6 +15,7 @@ export default class DebugPanel {
     this.hover = null;
     this.click = null;
     this.furniture = null;
+    this.customers = '-';
 
     this.bg = scene.add.rectangle(0, 0, 1, 1, 0x1e1a1d, 0.7).setOrigin(0, 0);
     this.text = scene.add.text(PADDING, PADDING, '', {
@@ -51,15 +52,22 @@ export default class DebugPanel {
     this.furniture = type;
   }
 
+  setCustomers(text) {
+    this.customers = text;
+  }
+
   // Llamar en update() de la escena
   update() {
     if (!this.container.visible) return;
-    const content = formatDebugText({
-      fps: this.scene.game.loop.actualFps,
-      hover: this.hover,
-      click: this.click,
-      furniture: this.furniture,
-    });
+    const content =
+      formatDebugText({
+        fps: this.scene.game.loop.actualFps,
+        hover: this.hover,
+        click: this.click,
+        furniture: this.furniture,
+      }) +
+      `
+clientes ${this.customers}`;
     // Redibujar el texto solo si cambia
     if (content === this.text.text) return;
     this.text.setText(content);

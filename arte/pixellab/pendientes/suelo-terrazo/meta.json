@@ -68,67 +68,6 @@
       },
       "semitransparentes": 0,
       "nota": "Casi lisa: apenas hay granos de terrazo; la tapa es un crema plano (#dfc7af) y el canto tira a morado. Al repetirse se ven juntas finas (los bordes de la tapa son más oscuros): parece baldosa grande, no terrazo continuo."
-    },
-    "v2": {
-      "archivo": "v2.png",
-      "pixellab_id": "3d689212-76c9-4008-87f3-f9815c7d50fd",
-      "seed": 2202,
-      "outline": "single color outline",
-      "prompt": "old spanish tapas bar terrazzo floor tile, beige ochre base with angular cubist chips of dark brown, sienna, cream and blue-grey marble, faceted flat floor surface, light from top-left, pixel art",
-      "dimensiones": [
-        32,
-        32
-      ],
-      "bbox_opaco": {
-        "x": [
-          0,
-          31
-        ],
-        "y": [
-          11,
-          31
-        ]
-      },
-      "colores": 30,
-      "fuera_de_paleta": {
-        "colores": 30,
-        "pixeles": 468,
-        "de": 468,
-        "lista": [
-          "#ab7355",
-          "#e7c599",
-          "#71343a",
-          "#e9caa3",
-          "#672b34",
-          "#e5ddd2",
-          "#ebceac",
-          "#3f1224",
-          "#e2d3c1",
-          "#d8aa7c",
-          "#41122f",
-          "#c88651",
-          "#d6c8c2",
-          "#925844",
-          "#255a75",
-          "#51152c",
-          "#562243",
-          "#7b4055",
-          "#381740",
-          "#4f2a6d",
-          "#b65c40",
-          "#303a55",
-          "#4b5083",
-          "#883239",
-          "#372936",
-          "#da744b",
-          "#97132a",
-          "#a34462",
-          "#b95e66",
-          "#644871"
-        ]
-      },
-      "semitransparentes": 0,
-      "nota": "Manchas grandes y angulosas (más mármol/patchwork que terrazo de grano fino); 30 colores; algún píxel azul en el canto derecho. Al repetirse, el contorno de cada tile marca juntas muy visibles y se nota el patrón repetido."
     }
   }
 }

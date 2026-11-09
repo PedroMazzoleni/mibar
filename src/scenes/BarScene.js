@@ -16,6 +16,8 @@ import { findLayer, readFurniture } from '../logic/tiledMap.js';
 import { getFurnitureLabel } from '../logic/furnitureNames.js';
 import { buildNavGrid } from '../logic/navGrid.js';
 import Mover from '../objects/Mover.js';
+import CustomerSprite from '../objects/CustomerSprite.js';
+import CustomerSystem from '../systems/customerSystem.js';
 import FurnitureSprite from '../objects/FurnitureSprite.js';
 import Tooltip from '../ui/Tooltip.js';
 import DebugPanel from '../ui/DebugPanel.js';
@@ -34,6 +36,8 @@ const DEPTH_STEP = 10;
 const SUB = { paredes: 0, furniture: 2, mover: 3, zocalos: 5 };
 // Tecla del banco de pruebas de profundidad (solo DEV)
 const MOVER_TEST_KEY = 'F5';
+// Tecla que crea un cliente de prueba (solo DEV)
+const CUSTOMER_TEST_KEY = 'F6';
 const TILE_LAYERS = ['suelo', 'paredes', 'zocalos'];
 
 const depthIn = (col, row, sub) => DEPTH_BASE + depthOf(col, row) * DEPTH_STEP + sub;
@@ -78,6 +82,12 @@ export default class BarScene extends Phaser.Scene {
     // Objetos que se mueven: se reordenan por profundidad en cada frame
     this.movers = [];
     if (import.meta.env.DEV) this.setupMoverTest();
+    this.customerSystem = new CustomerSystem(this, mapData);
+    if (import.meta.env.DEV) {
+      this.input.keyboard.addKey(CUSTOMER_TEST_KEY).on('down', () => {
+        this.customerSystem.spawnCustomer(this.scene.get('Hud').status);
+      });
+    }
 
     // Rombo de la casilla bajo el ratón (el mueble se ilumina por su cuenta)
     this.highlight = this.add.graphics().setDepth(DEPTH.highlight).setVisible(false);
@@ -176,8 +186,10 @@ export default class BarScene extends Phaser.Scene {
       // Clic sin arrastre: casilla pulsada y, si lo hay, el mueble de encima
       if (this.dragStart && !this.dragging) {
         this.debug.setClick(this.tileAt(pointer));
+        const customer = over.find((o) => o instanceof CustomerSprite);
         const target = over.find((o) => o instanceof FurnitureSprite);
-        if (target) this.onFurnitureClick(target);
+        if (customer) this.customerSystem.onCustomerClick(customer);
+        else if (target) this.onFurnitureClick(target);
       }
       this.resetDrag();
       // Al soltar sobre un mueble, el tooltip vuelve a mostrarse
@@ -209,7 +221,9 @@ export default class BarScene extends Phaser.Scene {
     return pointer.y < layoutTopBar(this.scale.width).totalHeight;
   }
 
-  update() {
+  update(_time, delta) {
+    this.customerSystem.update(delta);
+    this.debug.setCustomers(this.customerSystem.debugText());
     this.debug.update();
     this.updateMoverDepth();
   }
