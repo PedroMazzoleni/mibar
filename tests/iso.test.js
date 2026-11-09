@@ -6,10 +6,13 @@ import {
   WALL_HEIGHT,
   gridToScreen,
   screenToGrid,
+  screenToGridF,
   mapOrigin,
   mapPixelSize,
   tileCorners,
   depthOf,
+  depthOfPoint,
+  moverDepthSub,
 } from '../src/logic/iso.js';
 
 describe('constantes', () => {
@@ -53,6 +56,53 @@ describe('screenToGrid', () => {
     expect(screenToGrid(origin.x, origin.y - 10, origin)).toEqual({ col: -1, row: -1 }));
 });
 
+describe('screenToGridF', () => {
+  const origin = { x: 160, y: 32 };
+  it('ida y vuelta con gridToScreen, incluidos decimales', () => {
+    for (const [gc, gr] of [
+      [0, 0],
+      [2.5, 3],
+      [0.25, 7.75],
+      [-1.5, 4.2],
+      [12.125, 0.5],
+    ]) {
+      const s = gridToScreen(gc, gr, origin);
+      const back = screenToGridF(s.x, s.y, origin);
+      expect(back.gc).toBeCloseTo(gc, 10);
+      expect(back.gr).toBeCloseTo(gr, 10);
+    }
+  });
+  it('ida y vuelta en sentido contrario: pantalla → rejilla → pantalla', () => {
+    const p = { x: 211.5, y: 97.25 };
+    const g = screenToGridF(p.x, p.y, origin);
+    const s = gridToScreen(g.gc, g.gr, origin);
+    expect(s.x).toBeCloseTo(p.x, 10);
+    expect(s.y).toBeCloseTo(p.y, 10);
+  });
+  it('los enteros caen en las esquinas de la casilla', () => {
+    const top = gridToScreen(2, 2, origin);
+    expect(screenToGridF(top.x, top.y, origin)).toEqual({ gc: 2, gr: 2 });
+  });
+});
+
+describe('screenToGrid y screenToGridF coherentes', () => {
+  const origin = { x: 160, y: 32 };
+  it('screenToGrid es el suelo de screenToGridF', () => {
+    for (const [x, y] of [
+      [160, 40],
+      [200, 90],
+      [120, 60],
+      [150, 10],
+    ]) {
+      const f = screenToGridF(x, y, origin);
+      expect(screenToGrid(x, y, origin)).toEqual({
+        col: Math.floor(f.gc),
+        row: Math.floor(f.gr),
+      });
+    }
+  });
+});
+
 describe('mapOrigin y mapPixelSize', () => {
   it('deja el mapa en x ≥ 0 con margen arriba', () => {
     expect(mapOrigin(10)).toEqual({ x: 160, y: 32 });
@@ -81,5 +131,128 @@ describe('depthOf', () => {
   it('más columna o fila → más delante', () => {
     expect(depthOf(2, 3)).toBeGreaterThan(depthOf(2, 2));
     expect(depthOf(3, 2)).toBe(depthOf(2, 3));
+  });
+});
+
+describe('depthOfPoint', () => {
+  it('depthOfPoint(2.5, 3) = 5.5', () => expect(depthOfPoint(2.5, 3)).toBe(5.5));
+  it('con enteros coincide con depthOf', () => {
+    for (let col = -2; col <= 6; col++) {
+      for (let row = -2; row <= 6; row++) {
+        expect(depthOfPoint(col, row)).toBe(depthOf(col, row));
+      }
+    }
+  });
+  it('un punto más abajo en pantalla (misma x) tiene profundidad mayor', () => {
+    const origin = { x: 160, y: 32 };
+    const x = 200;
+    const high = screenToGridF(x, 60, origin);
+    const low = screenToGridF(x, 61, origin);
+    expect(depthOfPoint(low.gc, low.gr)).toBeGreaterThan(depthOfPoint(high.gc, high.gr));
+  });
+  it('desplazar (16, 8) px en pantalla sube la profundidad en 1', () => {
+    const origin = { x: 0, y: 0 };
+    const a = screenToGridF(0, 40, origin);
+    const b = screenToGridF(16, 48, origin);
+    expect(depthOfPoint(b.gc, b.gr) - depthOfPoint(a.gc, a.gr)).toBeCloseTo(1, 10);
+  });
+});
+
+// Fórmula de BarScene (depthForMover) reproducida aquí sin importar Phaser:
+// depthForMover(gc, gr) = depthIn(floor gc, floor gr, moverDepthSub(gc, gr)).
+// Valores de BarScene.js: DEPTH_BASE = 10, DEPTH_STEP = 10, SUB = { furniture: 2, zocalos: 5 }.
+const DEPTH_BASE = 10;
+const DEPTH_STEP = 10;
+const SUB = { furniture: 2, zocalos: 5 };
+const depthIn = (col, row, sub) => DEPTH_BASE + depthOf(col, row) * DEPTH_STEP + sub;
+const depthForMoverGrid = (gc, gr) =>
+  depthIn(Math.floor(gc), Math.floor(gr), moverDepthSub(gc, gr));
+
+// Casillas de muestra, incluidas negativas
+const CELLS = [
+  [0, 0],
+  [2, 3],
+  [7, 1],
+  [4, 2],
+  [3, 3],
+  [-2, -1],
+];
+// Fracciones dentro de la casilla; 0.99 deja gc + gr cerca de c + r + 2
+const FRACS = [0, 0.01, 0.2, 0.5, 0.8, 0.99];
+
+describe('moverDepthSub', () => {
+  it('siempre en [3, 3.9) dentro de la casilla', () => {
+    for (const [c, r] of CELLS) {
+      for (const a of FRACS) {
+        for (const b of FRACS) {
+          const s = moverDepthSub(c + a, r + b);
+          expect(s).toBeGreaterThanOrEqual(3);
+          expect(s).toBeLessThan(3.9);
+        }
+      }
+    }
+  });
+  it('crece al avanzar hacia la esquina de abajo de la casilla', () => {
+    expect(moverDepthSub(2.1, 3.1)).toBeLessThan(moverDepthSub(2.5, 3.5));
+    expect(moverDepthSub(2.5, 3.5)).toBeLessThan(moverDepthSub(2.99, 3.99));
+  });
+});
+
+describe('orden de dibujo del mover frente a muebles y zócalos', () => {
+  it('para todo punto de (c,r) el mover queda estrictamente entre mueble (+2) y zócalo (+5) de su casilla', () => {
+    for (const [c, r] of CELLS) {
+      const furn = depthIn(c, r, SUB.furniture);
+      const zoc = depthIn(c, r, SUB.zocalos);
+      for (const a of FRACS) {
+        for (const b of FRACS) {
+          const m = depthForMoverGrid(c + a, r + b);
+          expect(m).toBeGreaterThan(furn);
+          expect(m).toBeLessThan(zoc);
+        }
+      }
+    }
+  });
+  it('gc + gr cerca de c + r + 2 sigue entre mueble y zócalo de (c,r)', () => {
+    for (const [c, r] of CELLS) {
+      const m = depthForMoverGrid(c + 0.99, r + 0.99);
+      expect(m).toBeGreaterThan(depthIn(c, r, SUB.furniture));
+      expect(m).toBeLessThan(depthIn(c, r, SUB.zocalos));
+    }
+  });
+  it('para todo punto de (c,r) el mover queda por debajo del mueble de (c+1,r) y de (c,r+1)', () => {
+    for (const [c, r] of CELLS) {
+      const furnRight = depthIn(c + 1, r, SUB.furniture);
+      const furnDown = depthIn(c, r + 1, SUB.furniture);
+      for (const a of FRACS) {
+        for (const b of FRACS) {
+          const m = depthForMoverGrid(c + a, r + b);
+          expect(m).toBeLessThan(furnRight);
+          expect(m).toBeLessThan(furnDown);
+        }
+      }
+    }
+  });
+  it('en el centro de (c,r) va encima del mueble de (c-1,r) y debajo del de (c+1,r+1)', () => {
+    const c = 3;
+    const r = 3;
+    const m = depthForMoverGrid(c + 0.5, r + 0.5);
+    expect(m).toBeGreaterThan(depthIn(c - 1, r, SUB.furniture));
+    expect(m).toBeLessThan(depthIn(c + 1, r + 1, SUB.furniture));
+  });
+  it('en la misma casilla, pies más abajo en pantalla → profundidad mayor', () => {
+    const origin = { x: 160, y: 32 };
+    for (const [c, r] of CELLS) {
+      const center = gridToScreen(c + 0.5, r + 0.5, origin);
+      let prev = null;
+      for (let dy = -6; dy <= 6; dy++) {
+        const g = screenToGridF(center.x, center.y + dy, origin);
+        // Mismo x, distinto y: se mantiene dentro de la casilla
+        expect(Math.floor(g.gc)).toBe(c);
+        expect(Math.floor(g.gr)).toBe(r);
+        const d = depthForMoverGrid(g.gc, g.gr);
+        if (prev !== null) expect(d).toBeGreaterThan(prev);
+        prev = d;
+      }
+    }
   });
 });

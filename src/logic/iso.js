@@ -17,11 +17,17 @@ export function gridToScreen(gc, gr, origin = { x: 0, y: 0 }) {
   };
 }
 
-// Pantalla (mundo) → casilla que contiene el punto (admite negativos, no limita rango)
-export function screenToGrid(x, y, origin = { x: 0, y: 0 }) {
+// Pantalla (mundo) → punto de rejilla fraccionario (inversa exacta de gridToScreen)
+export function screenToGridF(x, y, origin = { x: 0, y: 0 }) {
   const dx = (x - origin.x) / (TILE_W / 2);
   const dy = (y - origin.y) / (TILE_H / 2);
-  return { col: Math.floor((dy + dx) / 2), row: Math.floor((dy - dx) / 2) };
+  return { gc: (dy + dx) / 2, gr: (dy - dx) / 2 };
+}
+
+// Pantalla (mundo) → casilla que contiene el punto (admite negativos, no limita rango)
+export function screenToGrid(x, y, origin = { x: 0, y: 0 }) {
+  const { gc, gr } = screenToGridF(x, y, origin);
+  return { col: Math.floor(gc), row: Math.floor(gr) };
 }
 
 // Origen para que el mapa entero quede en x ≥ 0 y con margen arriba para lo que sobresale
@@ -50,4 +56,16 @@ export function tileCorners(col, row, origin) {
 // Orden de dibujo: lo que está más abajo en pantalla (más columna + fila) va delante
 export function depthOf(col, row) {
   return col + row;
+}
+
+// Profundidad de un punto de rejilla con decimales (con enteros coincide con depthOf)
+export function depthOfPoint(gc, gr) {
+  return gc + gr;
+}
+
+// Subnivel de profundidad de algo que se mueve dentro de su casilla: entre el mueble (2) y el zócalo (5).
+// Crece con la parte fraccionaria de gc y gr (más abajo en la casilla = más delante), siempre en [3, 3.9)
+export function moverDepthSub(gc, gr) {
+  const frac = (gc - Math.floor(gc) + (gr - Math.floor(gr))) / 2;
+  return 3 + frac * 0.9;
 }

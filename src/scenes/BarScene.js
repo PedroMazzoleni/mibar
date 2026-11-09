@@ -4,14 +4,17 @@ import { isInsideGrid } from '../logic/grid.js';
 import {
   gridToScreen,
   screenToGrid,
+  screenToGridF,
   mapOrigin,
   mapPixelSize,
   tileCorners,
   depthOf,
+  moverDepthSub,
 } from '../logic/iso.js';
 import { findLayer, readFurniture } from '../logic/tiledMap.js';
 import { getFurnitureLabel } from '../logic/furnitureNames.js';
 import { buildNavGrid } from '../logic/navGrid.js';
+import Mover from '../objects/Mover.js';
 import FurnitureSprite from '../objects/FurnitureSprite.js';
 import Tooltip from '../ui/Tooltip.js';
 import DebugPanel from '../ui/DebugPanel.js';
@@ -27,10 +30,18 @@ const NAV_KEY = 'F4';
 const DEPTH = { floor: 0, highlight: 1, overlay: 900 };
 const DEPTH_BASE = 10;
 const DEPTH_STEP = 10;
-const SUB = { paredes: 0, furniture: 2, zocalos: 5 };
+const SUB = { paredes: 0, furniture: 2, mover: 3, zocalos: 5 };
+// Tecla del banco de pruebas de profundidad (solo DEV)
+const MOVER_TEST_KEY = 'F5';
 const TILE_LAYERS = ['suelo', 'paredes', 'zocalos'];
 
 const depthIn = (col, row, sub) => DEPTH_BASE + depthOf(col, row) * DEPTH_STEP + sub;
+
+// Profundidad de algo que se mueve: se calcula con los pies (x, y en mundo), no con una casilla
+const depthForMover = (x, y, origin) => {
+  const { gc, gr } = screenToGridF(x, y, origin);
+  return depthIn(Math.floor(gc), Math.floor(gr), moverDepthSub(gc, gr));
+};
 
 // Escena del bar: mapa isométrico de Tiled con sus muebles, cámara arrastrable y navegación
 export default class BarScene extends Phaser.Scene {
@@ -62,6 +73,10 @@ export default class BarScene extends Phaser.Scene {
     this.input.keyboard
       .addKey(NAV_KEY)
       .on('down', () => this.navOverlay.setVisible(!this.navOverlay.visible));
+
+    // Objetos que se mueven: se reordenan por profundidad en cada frame
+    this.movers = [];
+    if (import.meta.env.DEV) this.setupMoverTest();
 
     // Rombo de la casilla bajo el ratón (el mueble se ilumina por su cuenta)
     this.highlight = this.add.graphics().setDepth(DEPTH.highlight).setVisible(false);
@@ -175,6 +190,30 @@ export default class BarScene extends Phaser.Scene {
 
   update() {
     this.debug.update();
+    this.updateMoverDepth();
+  }
+
+  // Recalcula la profundidad de cada mover según dónde tiene los pies
+  updateMoverDepth() {
+    for (const m of this.movers) m.setDepth(depthForMover(m.x, m.y, this.origin));
+  }
+
+  // Banco de pruebas (F5, solo DEV): un marcador con los pies en el puntero
+  setupMoverTest() {
+    const marker = new Mover(this, 0, 0);
+    marker.setVisible(false);
+    this.movers.push(marker);
+    this.moverTestOn = false;
+    this.input.keyboard.addKey(MOVER_TEST_KEY).on('down', () => {
+      this.moverTestOn = !this.moverTestOn;
+      marker.setVisible(this.moverTestOn);
+    });
+    this.input.on('pointermove', (pointer) => {
+      if (!this.moverTestOn) return;
+      const cam = this.cameras.main;
+      const w = screenToWorld(cam.scrollX, cam.scrollY, pointer.x, pointer.y, cam.zoom);
+      marker.setPosition(w.x, w.y);
+    });
   }
 
   onFurnitureClick(sprite) {
