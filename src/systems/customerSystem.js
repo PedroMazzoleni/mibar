@@ -23,6 +23,8 @@ import OrderBubble from '../ui/OrderBubble.js';
 
 // Velocidad de paseo en píxeles por segundo
 const SPEED = 20;
+// Los bocadillos van por encima de muebles y paredes (y por debajo del overlay de F4, 900)
+const BUBBLE_DEPTH = 800;
 
 // Une la FSM del cliente con el pathfinding y la escena. La profundidad la recalcula
 // la escena en cada frame para todo lo que está en scene.movers (como en 2.6).
@@ -132,13 +134,11 @@ export default class CustomerSystem {
 
   destroyBubble(c) {
     if (!c.bubble) return;
-    const i = this.scene.movers.indexOf(c.bubble);
-    if (i >= 0) this.scene.movers.splice(i, 1);
     c.bubble.destroy();
     c.bubble = null;
   }
 
-  // Bocadillo sobre el cliente que espera para pedir; sigue su posición y su profundidad
+  // Bocadillo sobre el cliente que espera para pedir; sigue su posición y se ve por encima de todo
   syncBubble(c) {
     const ordering = c.data.state === 'ordering' && c.data.order;
     if (!ordering) {
@@ -151,8 +151,7 @@ export default class CustomerSystem {
         c.sprite.x,
         c.sprite.y - 10,
         `x1 ${c.data.order.name}`,
-      );
-      this.scene.movers.push(c.bubble);
+      ).setDepth(BUBBLE_DEPTH);
     }
     c.bubble.setPosition(c.sprite.x, c.sprite.y - 10);
   }
