@@ -1,0 +1,20 @@
+{
+  "types": [
+    {
+      "id": "regular",
+      "name": "Cliente habitual",
+      "consumeMs": 6000,
+      "payMs": 1500,
+      "patienceMs": 60000,
+      "tipChance": 0.1
+    },
+    {
+      "id": "worker",
+      "name": "Trabajador",
+      "consumeMs": 3000,
+      "payMs": 800,
+      "patienceMs": 30000,
+      "tipChance": 0.05
+    }
+  ]
+}

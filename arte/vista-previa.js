@@ -1,7 +1,7 @@
 // Vista previa del taller de sprites (solo en desarrollo, no entra en el build).
 // Vite sirve sprites.html con este script: lee los archivos de arte/ y public/ en directo,
 // así que la página se actualiza sola al cambiar un sprite, un PNG o un mapa.
-//   Secciones: sprites de texto · pendientes de revisión · aprobados · hojas · mapas
+//   Secciones: sprites de texto · pendientes de revisión · hojas · mapas
 import paletaJson from './paleta.json';
 import { gridToScreen, mapOrigin, mapPixelSize, depthOf } from '../src/logic/iso.js';
 import { readFurniture } from '../src/logic/tiledMap.js';
@@ -24,15 +24,6 @@ const pendientesMeta = import.meta.glob('./pixellab/pendientes/*/meta.json', {
   eager: true,
   import: 'default',
 });
-const aprobadosPng = import.meta.glob('./pixellab/aprobados/*.png', {
-  eager: true,
-  query: '?url',
-  import: 'default',
-});
-const aprobadosMeta = import.meta.glob('./pixellab/aprobados/*.json', {
-  eager: true,
-  import: 'default',
-});
 const hojasPng = import.meta.glob('./hojas/*.png', {
   eager: true,
   query: '?url',
@@ -43,6 +34,7 @@ const hojasJson = import.meta.glob('./hojas/*.json', { eager: true, import: 'def
 const zoom = document.querySelector('#zoom');
 const fondo = document.querySelector('#fondo');
 const rejilla = document.querySelector('#rejilla');
+const apoyo = document.querySelector('#apoyo');
 
 // Recordar los controles entre recargas
 try {
@@ -50,6 +42,7 @@ try {
   if (guardado.zoom) zoom.value = guardado.zoom;
   if (guardado.fondo) fondo.value = guardado.fondo;
   if (guardado.rejilla !== undefined) rejilla.checked = guardado.rejilla;
+  if (guardado.apoyo) apoyo.value = guardado.apoyo;
 } catch {
   /* sin preferencias guardadas */
 }
@@ -58,7 +51,12 @@ function guardar() {
   try {
     localStorage.setItem(
       'taller-sprites',
-      JSON.stringify({ zoom: zoom.value, fondo: fondo.value, rejilla: rejilla.checked }),
+      JSON.stringify({
+        zoom: zoom.value,
+        fondo: fondo.value,
+        rejilla: rejilla.checked,
+        apoyo: apoyo.value,
+      }),
     );
   } catch {
     /* no pasa nada */
@@ -205,6 +203,103 @@ function pngSobreSuelo(img, anclaje, repetir) {
   });
 }
 
+// Objeto pequeño (comida, bebida…) apoyado en el centro de la tapa de un mueble del tileset.
+// El centro de la tapa está 8 px por debajo de su esquina de atrás (el primer píxel opaco de la
+// columna central del frame)
+const MUEBLES_APOYO = {
+  barra: 'barra',
+  encimera: 'encimera',
+  mesa: 'mesa (centro)',
+};
+function sobreMueble(sprite, frame, mueble, escala = 3) {
+  const tiles = sprites.find((s) => s.etiquetas?.includes(MUEBLES_APOYO[mueble]));
+  if (!tiles) throw new Error(`no hay "${MUEBLES_APOYO[mueble]}" en ningún tileset`);
+  const base = tiles.frames[tiles.etiquetas.indexOf(MUEBLES_APOYO[mueble])];
+  const arriba = Math.max(0, sprite.alto - (base.findIndex((f) => f[16] !== '.') + 8) + 4);
+  const { lienzo, ctx } = nuevoLienzo(tiles.ancho * escala, (tiles.alto + arriba) * escala);
+  ctx.fillStyle = '#1e1a1d';
+  ctx.fillRect(0, 0, lienzo.width, lienzo.height);
+  pintarFrame(ctx, base, 0, arriba, escala);
+  const centroTapa = arriba + base.findIndex((f) => f[16] !== '.') + 8;
+  // la base del plato o del vaso asoma un poco por delante del centro de la tapa
+  pintarFrame(ctx, frame, tiles.ancho / 2 - sprite.ancho / 2, centroTapa + 3 - sprite.alto, escala);
+  return lienzo;
+}
+
+// Muestra: un tramo de barra con bebidas y una mesa con tapas, montados con piezas del tileset.
+// Las casillas avanzan por el eje x de la rejilla (+16, +8 px). Cada objeto se apoya en el centro
+// de la tapa de su casilla, con un pequeño desplazamiento (dx, dy) para que no se pisen.
+const MUESTRAS = [
+  {
+    titulo: 'Barra',
+    piezas: ['barra', 'barra', 'barra', 'barra'],
+    objetos: [
+      ['cerveza', 0, 0, 0],
+      ['copa de vino', 1, 0, 0],
+      ['café', 2, 0, 0],
+      ['bravas con salsa y alioli', 3, 0, 0],
+    ],
+  },
+  {
+    titulo: 'Mesa',
+    piezas: ['mesa (izquierda)', 'mesa (centro)', 'mesa (derecha)'],
+    objetos: [
+      ['olivas', 0, -4, -1],
+      ['patatas chips', 1, -6, -1],
+      ['ensaladilla rusa', 1, 6, 2],
+      ['bravas con salsa y alioli', 2, 2, 0],
+    ],
+  },
+];
+function pintarMuestras() {
+  const cont = document.querySelector('#muestras');
+  cont.innerHTML = '';
+  const comida = sprites.find((s) => s.nombre === 'comida');
+  const tiles = sprites.find((s) => s.etiquetas?.includes('barra'));
+  const escala = 4;
+  for (const { titulo, piezas, objetos } of MUESTRAS) {
+    try {
+      if (!comida || !tiles) throw new Error('faltan los sprites "comida" o "bar-tiles"');
+      const frameDe = (s, nombre) => {
+        const i = s.etiquetas.indexOf(nombre);
+        if (i < 0) throw new Error(`no hay "${nombre}" en ${s.nombre}`);
+        return s.frames[i];
+      };
+      const margen = 16;
+      const ancho = tiles.ancho + 16 * (piezas.length - 1) + margen * 2;
+      const alto = tiles.alto + 8 * (piezas.length - 1) + margen * 2;
+      const { lienzo, ctx } = nuevoLienzo(ancho * escala, alto * escala);
+      ctx.fillStyle = '#1e1a1d';
+      ctx.fillRect(0, 0, lienzo.width, lienzo.height);
+      const origen = (i) => [margen + 16 * i, margen + 8 * i];
+      piezas.forEach((p, i) => pintarFrame(ctx, frameDe(tiles, p), ...origen(i), escala));
+      // el quinto campo opcional es el sprite del que sale el objeto (por defecto, "comida")
+      for (const [nombre, casilla, dx, dy, deSprite = 'comida'] of objetos) {
+        const origenSprite =
+          deSprite === 'comida' ? comida : sprites.find((s) => s.nombre === deSprite);
+        if (!origenSprite) throw new Error(`no existe el sprite "${deSprite}"`);
+        const base = frameDe(tiles, piezas[casilla]);
+        const [x, y] = origen(casilla);
+        const centroTapa = y + base.findIndex((f) => f[16] !== '.') + 8;
+        const frame = frameDe(origenSprite, nombre);
+        pintarFrame(
+          ctx,
+          frame,
+          x + tiles.ancho / 2 - origenSprite.ancho / 2 + dx,
+          centroTapa + 3 - origenSprite.alto + dy,
+          escala,
+        );
+      }
+      cont.append(figura(lienzo, titulo));
+    } catch (e) {
+      const error = document.createElement('p');
+      error.className = 'error';
+      error.textContent = `${titulo}: ${e.message}`;
+      cont.append(error);
+    }
+  }
+}
+
 // ---------- PNG: carga, escala y colores fuera de paleta
 function cargarImagen(url) {
   return new Promise((ok, mal) => {
@@ -303,8 +398,12 @@ function pintar() {
     const lienzos = document.createElement('div');
     lienzos.className = 'lienzos';
     try {
+      const objetoPequeno = sprite.ancho <= 16 && sprite.alto <= 16;
       for (const { frame, etiqueta, total } of framesVisibles(sprite)) {
-        const lienzo = dibujar(sprite, frame, Number(zoom.value), rejilla.checked);
+        const lienzo =
+          objetoPequeno && apoyo.value !== 'ninguno'
+            ? sobreMueble(sprite, frame, apoyo.value)
+            : dibujar(sprite, frame, Number(zoom.value), rejilla.checked);
         if (!etiqueta) lienzos.append(lienzo);
         else lienzos.append(figura(lienzo, total > 1 ? `${etiqueta} (×${total})` : etiqueta));
       }
@@ -380,45 +479,6 @@ async function pintarPendientes() {
       }
       cont.append(tarjeta);
     }
-  }
-}
-
-// ---------- c) aprobados: arte/pixellab/aprobados/<asset>.png y, si existe, <asset>.paleta.png
-async function pintarAprobados() {
-  const cont = document.querySelector('#aprobados');
-  cont.innerHTML = '';
-  const originales = Object.entries(aprobadosPng).filter(([ruta]) => !ruta.endsWith('.paleta.png'));
-  if (originales.length === 0) return vacio(cont);
-  for (const [ruta, url] of originales) {
-    const asset = ruta.match(/aprobados\/([^/]+)\.png$/)[1];
-    const ajustado = aprobadosPng[`./pixellab/aprobados/${asset}.paleta.png`];
-    const meta = aprobadosMeta[`./pixellab/aprobados/${asset}.json`] ?? {};
-    const tarjeta = document.createElement('section');
-    tarjeta.className = 'sprite';
-    try {
-      const antes = await cargarImagen(url);
-      tarjeta.innerHTML = `<h2>${asset}</h2><small>${antes.width}×${antes.height} px · ${ajustado ? 'antes y después del ajuste de paleta' : 'sin ajustar todavía (npm run paleta -- …)'}</small>`;
-      if (meta.prompt)
-        tarjeta.insertAdjacentHTML(
-          'beforeend',
-          `<p class="pendiente-nota"><b>Prompt:</b> ${meta.prompt}</p>`,
-        );
-      const lienzos = document.createElement('div');
-      lienzos.className = 'lienzos';
-      const antesFig = figura(lienzoEscalado(antes, 4), 'antes (×4)');
-      antesFig.append(avisoPaleta(coloresFueraDePaleta(antes)));
-      lienzos.append(antesFig);
-      if (ajustado) {
-        const despues = await cargarImagen(ajustado);
-        const despuesFig = figura(lienzoEscalado(despues, 4), 'después (×4)');
-        despuesFig.append(avisoPaleta(coloresFueraDePaleta(despues)));
-        lienzos.append(despuesFig);
-      }
-      tarjeta.append(lienzos);
-    } catch (e) {
-      tarjeta.innerHTML = `<h2>${asset}</h2><span class="error">${e.message}</span>`;
-    }
-    cont.append(tarjeta);
   }
 }
 
@@ -545,11 +605,11 @@ async function pintarMapas() {
   }
 }
 
-[zoom, fondo, rejilla].forEach((el) => el.addEventListener('input', pintar));
+[zoom, fondo, rejilla, apoyo].forEach((el) => el.addEventListener('input', pintar));
 fondo.addEventListener('input', pintarPendientes);
 pintarPaleta();
 pintar();
+pintarMuestras();
 pintarPendientes();
-pintarAprobados();
 pintarHojas();
 pintarMapas();

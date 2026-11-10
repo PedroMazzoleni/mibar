@@ -37,6 +37,7 @@ export default class PreloadScene extends Phaser.Scene {
     // BASE_URL: '/' en desarrollo y '/mibar/' en el build de GitHub Pages
     this.load.setPath(import.meta.env.BASE_URL);
     this.load.json('furniture-names', 'assets/data/furniture-names.json');
+    this.load.json('customers', 'assets/data/customers.json');
     this.load.json('bar-map', 'assets/maps/bar.tmj');
     this.load.spritesheet('bar-tiles', 'assets/sprites/bar-tiles.png', {
       frameWidth: FRAME_W,

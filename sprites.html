@@ -148,7 +148,6 @@
         border: 1px solid var(--tinta);
       }
       #pendientes,
-      #aprobados,
       #hojas {
         display: flex;
         flex-wrap: wrap;
@@ -185,12 +184,21 @@
         </select>
       </label>
       <label><input id="rejilla" type="checkbox" checked /> Rejilla</label>
+      <label
+        >Apoyar objetos en
+        <select id="apoyo">
+          <option value="ninguno">Nada</option>
+          <option value="barra">Barra</option>
+          <option value="encimera">Encimera</option>
+          <option value="mesa">Mesa</option>
+        </select>
+      </label>
     </div>
     <div id="paleta"></div>
     <nav id="indice">
       <a href="#sec-texto">Sprites de texto</a>
+      <a href="#sec-muestras">Muestra en barra y mesa</a>
       <a href="#sec-pendientes">Pendientes de revisión</a>
-      <a href="#sec-aprobados">Aprobados</a>
       <a href="#sec-hojas">Hojas</a>
       <a href="#sec-mapas">Mapas</a>
     </nav>
@@ -200,18 +208,18 @@
       sobre un suelo isométrico de prueba de 3×3 rombos.
     </p>
     <main id="sprites"></main>
+    <h1 id="sec-muestras">Muestra en barra y mesa</h1>
+    <p>
+      La comida y la bebida de <code>comida.json</code> colocadas sobre un tramo de barra y una mesa
+      de <code>bar-tiles.json</code>, a ×4.
+    </p>
+    <section id="muestras" class="lienzos"></section>
     <h1 id="sec-pendientes">Pendientes de revisión</h1>
     <p>
       Generados con PixelLab en <code>arte/pixellab/pendientes/</code>. Cada variante a ×1 y ×4, y
       sobre el suelo de prueba, con su prompt y los colores que se salen de la paleta.
     </p>
     <section id="pendientes"></section>
-    <h1 id="sec-aprobados">Aprobados</h1>
-    <p>
-      <code>arte/pixellab/aprobados/</code>. Con <code>npm run paleta -- &lt;png&gt;</code> se crea
-      <code>&lt;asset&gt;.paleta.png</code> y aquí se ve el antes y el después.
-    </p>
-    <section id="aprobados"></section>
     <h1 id="sec-hojas">Hojas</h1>
     <p>
       <code>arte/hojas/*.png</code> con su <code>.json</code>: cada celda numerada a ×4 sobre

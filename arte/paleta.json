@@ -51,5 +51,15 @@
   { "char": "=", "hex": "#E9D8A6", "nombre": "queso manchego" },
   { "char": "*", "hex": "#8C1C13", "nombre": "jamón" },
   { "char": "%", "hex": "#E8A090", "nombre": "grasa del jamón" },
-  { "char": "@", "hex": "#F4A259", "nombre": "refresco de naranja" }
+  { "char": "@", "hex": "#F4A259", "nombre": "refresco de naranja" },
+  { "char": "h", "hex": "#3f3539", "nombre": "humo / sombra neutra" },
+  { "char": "i", "hex": "#eaf2f4", "nombre": "brillo de inox y cristal" },
+  { "char": "m", "hex": "#ffd866", "nombre": "luz de bombilla" },
+  { "char": "x", "hex": "#d43b2c", "nombre": "rojo tomate (comida)" },
+  { "char": "j", "hex": "#5d9b3a", "nombre": "verde fresco (pimiento, perejil)" },
+  { "char": "v", "hex": "#b7d66b", "nombre": "verde lechuga" },
+  { "char": "p", "hex": "#5e3c6e", "nombre": "morado berenjena" },
+  { "char": "o", "hex": "#9a6fae", "nombre": "lila" },
+  { "char": "l", "hex": "#9cc8e6", "nombre": "azul cielo / cristal azulado" },
+  { "char": "w", "hex": "#c9a23a", "nombre": "latón (grifos, barandillas)" }
 ]

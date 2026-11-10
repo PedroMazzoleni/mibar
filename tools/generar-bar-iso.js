@@ -493,10 +493,12 @@ function mesa({ primera, ultima, servilletero }) {
 }
 
 // Mueble de cocina: encimera o plancha
+// La encimera lleva la tapa lisa de un solo gris (sin la tabla de cortar de la referencia)
 const encimera = (etiqueta, arriba, frente) => {
   const c = lienzo();
   const T = ref(etiqueta);
-  bloque(c, { z: [0, 18], arriba: zona(T, ...arriba), sur: zona(T, ...frente), bordes: false });
+  const tapa = etiqueta === 'encimera' ? () => 'g' : zona(T, ...arriba);
+  bloque(c, { z: [0, 18], arriba: tapa, sur: zona(T, ...frente), bordes: false });
   cara_sur(c, 1, [0, 1], [0, 1], () => '0');
   cara_este(c, 1, [0, 1], [0, 1], () => '0');
   return c;

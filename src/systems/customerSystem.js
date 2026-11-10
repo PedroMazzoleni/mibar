@@ -11,6 +11,7 @@ import {
 } from '../logic/customerFsm.js';
 import { findPath } from '../logic/pathfinding.js';
 import { createSpawner, advanceSpawner } from '../logic/spawner.js';
+import { validateCustomerTypes, nextCustomerType } from '../logic/customerTypes.js';
 import CustomerSprite from '../objects/CustomerSprite.js';
 
 // Velocidad de paseo en píxeles por segundo
@@ -26,6 +27,8 @@ export default class CustomerSystem {
     this.entrance = spawnTile(this.nav, readZones(mapData).points.entrada ?? { gc: 0, gr: 0 });
     this.customers = [];
     this.nextId = 1;
+    this.types = validateCustomerTypes(scene.cache.json.get('customers'));
+    this.typeIndex = 0;
     this.spawner = createSpawner(Math.random);
   }
 
@@ -38,10 +41,13 @@ export default class CustomerSystem {
     if (!canEnter(barStatus) || !this.entrance) return null;
     const taken = this.customers.filter((c) => c.data.seat).map((c) => c.data.seat);
     const seat = pickSeat(this.nav, this.seats, taken, this.entrance);
+    // Tipo por turno rotatorio; sin datos cargados, usa los tiempos por defecto
+    const type = this.types.length ? nextCustomerType(this.types, this.typeIndex++) : undefined;
     const c = {
-      data: assignSeat(createCustomer(this.nextId++, this.entrance), seat),
+      data: assignSeat(createCustomer(this.nextId++, this.entrance, type), seat),
       sprite: null,
     };
+    console.debug('cliente', c.data.id, 'tipo', type?.id ?? 'ninguno');
     if (seat) {
       const path = findPath(this.nav, this.entrance, seat.stand);
       c.data = { ...c.data, route: [...path.slice(1), { col: seat.col, row: seat.row }] };
