@@ -36,7 +36,7 @@ Fuente única de reglas de arte del proyecto. CLAUDE.md, la skill `/sprite` y el
 ## 4. Paleta
 
 - **Fuente de verdad:** `arte/paleta.json`. Ningún script ni sprite define colores fuera de ella.
-- **Máximo 64 colores.** Cada color tiene un único carácter, porque los sprites de texto usan un carácter por píxel.
+- **Máximo 96 colores.** Cada color tiene un único carácter, porque los sprites de texto usan un carácter por píxel.
 - **No se modifica ni se reordena ningún carácter existente.** Los colores nuevos se añaden al final con un carácter libre.
 - Antes de añadir un color, comprueba que no sea casi idéntico a uno existente.
 - **Roles acordados:**

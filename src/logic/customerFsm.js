@@ -53,14 +53,14 @@ export function assignSeat(customer, seat) {
   return advance({ ...customer, seat }, 'arrived');
 }
 
-// Descuenta el temporizador del estado actual y avanza cuando se agota
+// Descuenta el tiempo de consumir y pasa a 'paying' cuando se agota.
+// En 'paying' el cliente espera sin límite a que le cobren (evento 'paid'):
+// timers.paying queda solo como dato por ahora.
 export function tick(customer, dtMs) {
-  if (customer.state !== 'consuming' && customer.state !== 'paying') return customer;
-  const key = customer.state;
-  const left = Math.max(0, customer.timers[key] - dtMs);
-  const c = { ...customer, timers: { ...customer.timers, [key]: left } };
-  if (left > 0) return c;
-  return advance(c, key === 'consuming' ? 'finishedEating' : 'paid');
+  if (customer.state !== 'consuming') return customer;
+  const left = Math.max(0, customer.timers.consuming - dtMs);
+  const c = { ...customer, timers: { ...customer.timers, consuming: left } };
+  return left > 0 ? c : advance(c, 'finishedEating');
 }
 
 // Los clientes solo entran con el bar abierto

@@ -46,7 +46,7 @@ Marca con [x] solo cuando la tarea pase tests, lint y build. Una tarea cada vez,
 - [x] 3.2 Máquina de estados del cliente (entra → sitio → pedir → esperar → consumir → pagar → salir)
 - [x] 3.4 Spawner según hora (sin reputación)
 - [x] 3.5 Tipos de cliente en customers.json
-- [ ] 3.6 Tests de la máquina de estados
+- [x] 3.6 Tests de la máquina de estados
       **Hecho cuando:** los clientes entran solos según la hora, se sientan, piden, consumen, pagan y se van.
 
 ## Fase 4 — Interacción y servicio
@@ -133,3 +133,4 @@ Marca con [x] solo cuando la tarea pase tests, lint y build. Una tarea cada vez,
 - 2026-11-09 · 3.2 · Máquina de estados del cliente: src/logic/customerFsm.js (estados, pickSeat con casilla de acceso, advance, tick, canEnter), src/systems/customerSystem.js, src/objects/CustomerSprite.js; F6 crea un cliente solo con el bar abierto; clic = pedido tomado / servido; DebugPanel muestra el estado
 - 2026-11-09 · 3.4 · Spawner por franjas horarias provisionales (src/logic/spawner.js: hourSlot, spawnIntervalMs, advanceSpawner; solo con bar abierto y sitio libre, máx. 12 clientes); hora ficticia en la barra superior (src/logic/gameTime.js, 1 min de juego cada 15 s) con menú de velocidad x5/x10/x50/x100 al pulsar la hora; F7 adelanta 1 hora en dev; paciencia pospuesta a 5.7b y reputación a 5.7
 - 2026-11-10 · 3.5 · Tipos de cliente en public/assets/data/customers.json (regular y worker: consumeMs, payMs; patienceMs y tipChance solo como datos); src/logic/customerTypes.js (validateCustomerTypes, getCustomerType, nextCustomerType); createCustomer acepta tipo; el spawn alterna tipos por turno, sin azar (turistas, estudiantes y rng pospuestos)
+- 2026-11-10 · 3.6 · tests/customerFsm.test.js ampliado: tabla completa de transiciones (gone terminal), inmutabilidad, assignSeat, createCustomer con tipos regular/worker, límites de tick, pickSeat en su propio describe y spawnTile; sin cambios de lógica (pickSeat según cliente y hora queda para más adelante)

@@ -62,12 +62,16 @@ export default class CustomerSystem {
     return c.data;
   }
 
-  // Clic provisional (sin camarero): pedir y servir
+  // Clic provisional (sin camarero): pedir, servir y cobrar
   onCustomerClick(sprite) {
     const c = this.customers.find((x) => x.sprite === sprite);
     if (!c) return;
     if (c.data.state === 'ordering') c.data = advance(c.data, 'orderTaken');
     else if (c.data.state === 'waiting') c.data = advance(c.data, 'served');
+    else if (c.data.state === 'paying') {
+      c.data = advance(c.data, 'paid');
+      this.startLeaving(c);
+    }
     c.sprite.showState(c.data.state);
   }
 
@@ -96,9 +100,7 @@ export default class CustomerSystem {
       if (r.spawn) this.spawnCustomer(barStatus);
     }
     for (const c of this.customers) {
-      const before = c.data.state;
       c.data = tick(c.data, dtMs);
-      if (before === 'paying' && c.data.state === 'leaving') this.startLeaving(c);
       this.walk(c, dtMs);
       c.sprite.showState(c.data.state);
     }

@@ -900,6 +900,55 @@ mueble('perchero', 'perchero', 15, 5);
 mueble('tabaco', 'tabaco', 15, 8);
 mueble('tragaperras azul', 'tragaperras', 15, 11);
 
+// ---------- retoque con la paleta ampliada (después de deduplicar, para no mover ningún gid)
+// Metal: los brillos blancos pasan al brillo frío de inox y cristal
+const METAL = [
+  'barra',
+  'vitrina de tapas',
+  'grifo de cerveza',
+  'caja registradora',
+  'encimera',
+  'plancha',
+  'taburete',
+  'mesa de acero (izquierda)',
+  'mesa de acero (centro)',
+  'mesa de acero (derecha)',
+  'freidora doble',
+];
+// Muebles con patas: sombra de contacto en el suelo (rombo interior, corrido abajo-derecha)
+// (taburete, sillas y perchero ya traen su sombra de la referencia en X: se oscurece a h)
+const SOMBRA_REFERENCIA = ['taburete', 'silla de frente', 'silla de espaldas', 'perchero'];
+const SOMBRA_PATAS = {
+  'mesa (izquierda)': 0.7,
+  'mesa (centro)': 0.7,
+  'mesa (derecha)': 0.7,
+  'mesa de dos': 0.7,
+  'mesa de acero (izquierda)': 0.7,
+  'mesa de acero (centro)': 0.7,
+  'mesa de acero (derecha)': 0.7,
+  lavabo: 0.45,
+};
+function retocar(etiqueta, f) {
+  let c = f.map((fila) => [...fila]);
+  if (METAL.includes(etiqueta)) c = c.map((fila) => fila.map((ch) => (ch === '9' ? 'i' : ch)));
+  if (SOMBRA_REFERENCIA.includes(etiqueta)) {
+    for (let y = TOP + 8; y < H; y++) c[y] = c[y].map((ch) => (ch === 'X' ? 'h' : ch));
+  }
+  const escala = SOMBRA_PATAS[etiqueta];
+  if (escala) {
+    for (let y = TOP; y < H; y++) {
+      for (let x = 0; x < W; x++) {
+        const dx = Math.abs(x + 0.5 - (W / 2 + 2)) / (W / 2);
+        const dy = Math.abs(y + 0.5 - (TOP + 8 + 1)) / 8;
+        // tramado a cuadros: la sombra se lee más suave sobre cualquier suelo
+        if (dx + dy <= escala && c[y][x] === '.' && (x + y) % 2 === 0) c[y][x] = 'h';
+      }
+    }
+  }
+  return c.map((fila) => fila.join(''));
+}
+frames.forEach((f, i) => (frames[i] = retocar(etiquetas[i], f)));
+
 // ---------- escribir el tileset
 const sprite = {
   nombre: 'bar-tiles',
