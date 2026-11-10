@@ -24,6 +24,14 @@ export function validateCustomerTypes(data) {
     if (typeof t.tipChance !== 'number' || !(t.tipChance >= 0 && t.tipChance <= 1)) {
       throw new Error(`customers: "${t.id}".tipChance debe estar entre 0 y 1`);
     }
+    if (!Array.isArray(t.orders) || t.orders.length === 0) {
+      throw new Error(`customers: "${t.id}" sin lista "orders"`);
+    }
+    for (const o of t.orders) {
+      if (typeof o?.id !== 'string' || o.id === '' || typeof o.name !== 'string' || o.name === '') {
+        throw new Error(`customers: "${t.id}" tiene un pedido sin "id" o "name"`);
+      }
+    }
   }
   return types;
 }

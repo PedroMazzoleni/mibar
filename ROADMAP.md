@@ -51,8 +51,8 @@ Marca con [x] solo cuando la tarea pase tests, lint y build. Una tarea cada vez,
 
 ## Fase 4 — Interacción y servicio
 
-- [ ] 4.1 Clic en cliente → panel con su pedido
-- [ ] 4.2 Comandas y cola visible en HudScene
+- [x] 4.1 Clic en cliente → panel con su pedido; bocadillo que se convierte en comanda (x1 + mesa/taburete)
+- [x] 4.2 Cola de comandas pendientes a un lado del HudScene (ordenada, con retirada al servir)
 - [ ] 4.3 Preparar en la estación correcta con barra de progreso
 - [ ] 4.4 Llevar el pedido con el avatar y entregar en la mesa
 - [ ] 4.5 Cobrar en la caja o al cliente
@@ -134,3 +134,4 @@ Marca con [x] solo cuando la tarea pase tests, lint y build. Una tarea cada vez,
 - 2026-11-09 · 3.4 · Spawner por franjas horarias provisionales (src/logic/spawner.js: hourSlot, spawnIntervalMs, advanceSpawner; solo con bar abierto y sitio libre, máx. 12 clientes); hora ficticia en la barra superior (src/logic/gameTime.js, 1 min de juego cada 15 s) con menú de velocidad x5/x10/x50/x100 al pulsar la hora; F7 adelanta 1 hora en dev; paciencia pospuesta a 5.7b y reputación a 5.7
 - 2026-11-10 · 3.5 · Tipos de cliente en public/assets/data/customers.json (regular y worker: consumeMs, payMs; patienceMs y tipChance solo como datos); src/logic/customerTypes.js (validateCustomerTypes, getCustomerType, nextCustomerType); createCustomer acepta tipo; el spawn alterna tipos por turno, sin azar (turistas, estudiantes y rng pospuestos)
 - 2026-11-10 · 3.6 · tests/customerFsm.test.js ampliado: tabla completa de transiciones (gone terminal), inmutabilidad, assignSeat, createCustomer con tipos regular/worker, límites de tick, pickSeat en su propio describe y spawnTile; sin cambios de lógica (pickSeat según cliente y hora queda para más adelante)
+- 2026-11-10 · 4.1+4.2 · Clic en cliente abre src/ui/CustomerPanel.js (tipo, estado, pedido y botón provisional "Avanzar estado"); pedidos de texto en customers.json (src/logic/orders.js: pickOrder, describeCustomer, createTicket, seatLabel con Mesa N/Taburete N); bocadillo (src/ui/OrderBubble.js) que vuela a la cola de comandas del Hud (src/logic/orderQueue.js, src/ui/OrderQueuePanel.js: 6 visibles + "+N"); la comanda se retira al servir o si el cliente se va; nada se sirve solo

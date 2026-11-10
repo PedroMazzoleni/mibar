@@ -11,11 +11,18 @@ import {
 } from '../logic/customerFsm.js';
 import { findPath } from '../logic/pathfinding.js';
 import { createSpawner, advanceSpawner } from '../logic/spawner.js';
-import { validateCustomerTypes, nextCustomerType } from '../logic/customerTypes.js';
+import {
+  validateCustomerTypes,
+  nextCustomerType,
+  getCustomerType,
+} from '../logic/customerTypes.js';
+import { pickOrder, describeCustomer, createTicket, seatLabel } from '../logic/orders.js';
+import { createQueue, addTicket, removeByCustomer } from '../logic/orderQueue.js';
 import CustomerSprite from '../objects/CustomerSprite.js';
+import OrderBubble from '../ui/OrderBubble.js';
 
 // Velocidad de paseo en píxeles por segundo
-const SPEED = 40;
+const SPEED = 20;
 
 // Une la FSM del cliente con el pathfinding y la escena. La profundidad la recalcula
 // la escena en cada frame para todo lo que está en scene.movers (como en 2.6).
@@ -23,12 +30,16 @@ export default class CustomerSystem {
   constructor(scene, mapData) {
     this.scene = scene;
     this.nav = scene.nav;
-    this.seats = readFurniture(mapData).filter((f) => f.type === 'silla' || f.type === 'taburete');
+    this.furniture = readFurniture(mapData);
+    this.seats = this.furniture.filter((f) => f.type === 'silla' || f.type === 'taburete');
     this.entrance = spawnTile(this.nav, readZones(mapData).points.entrada ?? { gc: 0, gr: 0 });
     this.customers = [];
     this.nextId = 1;
     this.types = validateCustomerTypes(scene.cache.json.get('customers'));
     this.typeIndex = 0;
+    this.orderIndex = 0;
+    // Cola de comandas pendientes (lógica pura); el HudScene la dibuja
+    this.queue = createQueue();
     this.spawner = createSpawner(Math.random);
   }
 
@@ -43,9 +54,11 @@ export default class CustomerSystem {
     const seat = pickSeat(this.nav, this.seats, taken, this.entrance);
     // Tipo por turno rotatorio; sin datos cargados, usa los tiempos por defecto
     const type = this.types.length ? nextCustomerType(this.types, this.typeIndex++) : undefined;
+    const order = type ? pickOrder(type.orders, this.orderIndex++) : null;
     const c = {
-      data: assignSeat(createCustomer(this.nextId++, this.entrance, type), seat),
+      data: assignSeat(createCustomer(this.nextId++, this.entrance, type, order), seat),
       sprite: null,
+      bubble: null,
     };
     console.debug('cliente', c.data.id, 'tipo', type?.id ?? 'ninguno');
     if (seat) {
@@ -62,17 +75,86 @@ export default class CustomerSystem {
     return c.data;
   }
 
-  // Clic provisional (sin camarero): pedir, servir y cobrar
+  // El clic en un cliente solo avisa al Hud para que abra su panel; no cambia el estado
   onCustomerClick(sprite) {
     const c = this.customers.find((x) => x.sprite === sprite);
+    if (c) this.scene.events.emit('customer-click', { id: c.data.id });
+  }
+
+  // Textos del panel de un cliente, o null si ya no existe
+  describe(id) {
+    const c = this.customers.find((x) => x.data.id === id);
+    if (!c) return null;
+    return describeCustomer(c.data, getCustomerType(this.types, c.data.typeId));
+  }
+
+  // Acción provisional (sin camarero): pedir, servir y cobrar
+  advanceCustomer(id) {
+    const c = this.customers.find((x) => x.data.id === id);
     if (!c) return;
-    if (c.data.state === 'ordering') c.data = advance(c.data, 'orderTaken');
-    else if (c.data.state === 'waiting') c.data = advance(c.data, 'served');
-    else if (c.data.state === 'paying') {
+    if (c.data.state === 'ordering') {
+      c.data = advance(c.data, 'orderTaken');
+      this.addOrderTicket(c);
+    } else if (c.data.state === 'waiting') {
+      c.data = advance(c.data, 'served');
+      this.removeTicket(id);
+    } else if (c.data.state === 'paying') {
       c.data = advance(c.data, 'paid');
       this.startLeaving(c);
     }
     c.sprite.showState(c.data.state);
+  }
+
+  // Al tomar nota: la comanda entra en la cola y el bocadillo vuela hacia ella
+  addOrderTicket(c) {
+    const ticket = createTicket(c.data, seatLabel(c.data.seat, this.furniture));
+    this.queue = addTicket(this.queue, ticket);
+    const cam = this.scene.cameras.main;
+    const from = c.bubble ?? c.sprite;
+    this.scene.events.emit('ticket-added', {
+      ticket,
+      queue: this.queue,
+      from: {
+        x: (from.x - cam.scrollX) * cam.zoom,
+        y: (from.y - cam.scrollY) * cam.zoom,
+      },
+    });
+    this.destroyBubble(c);
+  }
+
+  // Retira la comanda de un cliente (servida o cliente que se va); no hace nada si no está
+  removeTicket(customerId) {
+    const next = removeByCustomer(this.queue, customerId);
+    if (next.tickets.length === this.queue.tickets.length) return;
+    this.queue = next;
+    this.scene.events.emit('queue-changed', { queue: this.queue });
+  }
+
+  destroyBubble(c) {
+    if (!c.bubble) return;
+    const i = this.scene.movers.indexOf(c.bubble);
+    if (i >= 0) this.scene.movers.splice(i, 1);
+    c.bubble.destroy();
+    c.bubble = null;
+  }
+
+  // Bocadillo sobre el cliente que espera para pedir; sigue su posición y su profundidad
+  syncBubble(c) {
+    const ordering = c.data.state === 'ordering' && c.data.order;
+    if (!ordering) {
+      this.destroyBubble(c);
+      return;
+    }
+    if (!c.bubble) {
+      c.bubble = new OrderBubble(
+        this.scene,
+        c.sprite.x,
+        c.sprite.y - 10,
+        `x1 ${c.data.order.name}`,
+      );
+      this.scene.movers.push(c.bubble);
+    }
+    c.bubble.setPosition(c.sprite.x, c.sprite.y - 10);
   }
 
   // Ruta de salida: de la silla a su casilla de acceso y de ahí a la entrada
@@ -103,10 +185,15 @@ export default class CustomerSystem {
       c.data = tick(c.data, dtMs);
       this.walk(c, dtMs);
       c.sprite.showState(c.data.state);
+      // Un cliente que se marcha sin que le sirvan no deja su comanda en la cola
+      if (c.data.state === 'leaving' || c.data.state === 'gone') this.removeTicket(c.data.id);
+      this.syncBubble(c);
     }
     // Los que se han ido desaparecen
     this.customers = this.customers.filter((c) => {
       if (c.data.state !== 'gone') return true;
+      this.removeTicket(c.data.id);
+      this.destroyBubble(c);
       this.scene.movers.splice(this.scene.movers.indexOf(c.sprite), 1);
       c.sprite.destroy();
       return false;

@@ -28,7 +28,7 @@ const TRANSITIONS = {
 };
 
 // Con tipo (customers.json) toma sus tiempos; sin tipo usa las constantes por defecto
-export function createCustomer(id, entrance, type) {
+export function createCustomer(id, entrance, type, order = null) {
   return {
     id,
     state: 'entering',
@@ -36,6 +36,7 @@ export function createCustomer(id, entrance, type) {
     seat: null,
     route: [],
     typeId: type?.id ?? null,
+    order,
     timers: { consuming: type?.consumeMs ?? CONSUME_MS, paying: type?.payMs ?? PAY_MS },
   };
 }

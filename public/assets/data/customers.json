@@ -6,7 +6,12 @@
       "consumeMs": 6000,
       "payMs": 1500,
       "patienceMs": 60000,
-      "tipChance": 0.1
+      "tipChance": 0.1,
+      "orders": [
+        { "id": "cana", "name": "Caña" },
+        { "id": "cafe-con-leche", "name": "Café con leche" },
+        { "id": "tinto", "name": "Tinto" }
+      ]
     },
     {
       "id": "worker",
@@ -14,7 +19,12 @@
       "consumeMs": 3000,
       "payMs": 800,
       "patienceMs": 30000,
-      "tipChance": 0.05
+      "tipChance": 0.05,
+      "orders": [
+        { "id": "cortado", "name": "Cortado" },
+        { "id": "cana", "name": "Caña" },
+        { "id": "bocadillo", "name": "Bocadillo" }
+      ]
     }
   ]
 }

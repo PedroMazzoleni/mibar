@@ -17,6 +17,7 @@ function tipo(overrides = {}) {
     payMs: 500,
     patienceMs: 2000,
     tipChance: 0.5,
+    orders: [{ id: 'cana', name: 'Caña' }],
     ...overrides,
   };
 }
@@ -69,7 +70,41 @@ describe('validateCustomerTypes', () => {
   });
 
   it('rechaza ids repetidos', () => {
-    expect(() => validateCustomerTypes({ types: [tipo({ id: 'x' }), tipo({ id: 'x' })] })).toThrow();
+    expect(() =>
+      validateCustomerTypes({ types: [tipo({ id: 'x' }), tipo({ id: 'x' })] }),
+    ).toThrow();
+  });
+
+  it('rechaza orders vacío o ausente', () => {
+    expect(() => validateCustomerTypes({ types: [tipo({ orders: [] })] })).toThrow();
+    expect(() => validateCustomerTypes({ types: [tipo({ orders: undefined })] })).toThrow();
+    expect(() => validateCustomerTypes({ types: [tipo({ orders: 'cana' })] })).toThrow();
+  });
+
+  it('rechaza un pedido sin name o con name vacío', () => {
+    expect(() =>
+      validateCustomerTypes({ types: [tipo({ orders: [{ id: 'cana' }] })] }),
+    ).toThrow();
+    expect(() =>
+      validateCustomerTypes({ types: [tipo({ orders: [{ id: 'cana', name: '' }] })] }),
+    ).toThrow();
+  });
+
+  it('rechaza un pedido sin id o con id no textual', () => {
+    expect(() =>
+      validateCustomerTypes({ types: [tipo({ orders: [{ name: 'Caña' }] })] }),
+    ).toThrow();
+    expect(() =>
+      validateCustomerTypes({ types: [tipo({ orders: [{ id: 3, name: 'Caña' }] })] }),
+    ).toThrow();
+  });
+
+  it('acepta un tipo con varios pedidos válidos', () => {
+    const orders = [
+      { id: 'cana', name: 'Caña' },
+      { id: 'vino', name: 'Vino' },
+    ];
+    expect(() => validateCustomerTypes({ types: [tipo({ orders })] })).not.toThrow();
   });
 });
 

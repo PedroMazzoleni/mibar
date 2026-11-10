@@ -170,6 +170,26 @@ describe('createCustomer', () => {
     expect(c.typeId).toBe(id);
     expect(c.timers).toEqual({ consuming: type.consumeMs, paying: type.payMs });
   });
+  it('order es null por defecto', () => {
+    expect(createCustomer(1, entrance).order).toBeNull();
+    expect(createCustomer(1, entrance, regular).order).toBeNull();
+  });
+  it('guarda el pedido que se le pasa', () => {
+    const order = { id: 'cana', name: 'Caña' };
+    expect(createCustomer(1, entrance, regular, order).order).toBe(order);
+  });
+});
+
+describe('tick no sirve por sí solo', () => {
+  // Sin acción externa (orderTaken / served) el cliente se queda donde está
+  it.each(['ordering', 'waiting'])(
+    'en %s no sale aunque pase mucho tiempo',
+    (state) => {
+      const c = { ...createCustomer(1, entrance, regular), state };
+      expect(tick(c, 10 * 60 * 1000)).toBe(c);
+      expect(tick(c, 10 * 60 * 1000).state).toBe(state);
+    },
+  );
 });
 
 describe('tick', () => {
